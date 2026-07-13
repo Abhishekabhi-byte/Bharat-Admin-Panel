@@ -13,31 +13,51 @@ import {
   BriefcaseBusiness,
   Home,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  PartyPopper,
+  UserRoundCog,
+  Diamond,
+  CalendarDays,
+  ShieldCheck,
+  Sparkles,
+  Award,
+  FolderOpen
 } from 'lucide-react';
 
 import { PiCertificateFill } from "react-icons/pi";
 
-// Home sections (all except certificate and journey)
+// Home sections 
 const homeSections = [
   { name: "Banner", path: "/banner", icon: Image },
   { name: "Foundation", path: "/foundation", icon: Building2 },
   { name: "Build Performance", path: "/build_performance", icon: Briefcase },
   { name: "Client voice", path: "/client", icon: Users },
-  { name: "Brand logo", path: "/logo", icon: User },
+  { name: "Brand logo", path: "/logo", icon: Diamond },
   { name: "Bussiness services", path: "/services", icon: BriefcaseBusiness },
 ];
 
-// About sections (journey and certificate)
+// About sections 
 const aboutSections = [
+  { name: "Festival", path: "/festival", icon: PartyPopper },
+  { name: "Team Image", path: "/Team_image", icon: UserRoundCog },
+  { name: "Celebrating", path: "/celebrating_years", icon: CalendarDays },
+  { name: "Legacy", path: "/legacy", icon: ShieldCheck },
+  { name: "Celebrating Moments", path: "/celebrating_moments", icon: Sparkles },
+  { name: "Employee Award", path: "/employee_award", icon: Award },
   { name: "Journey", path: "/journey", icon: Map },
   { name: "Certificate", path: "/certificate", icon: PiCertificateFill }
+];
+
+// Service sections
+const serviceSections = [ 
+  { name: "Portfolio showcase", path: "/portfolio_showcase", icon: FolderOpen },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [isHomeOpen, setIsHomeOpen] = useState(true);
   const [isAboutOpen, setIsAboutOpen] = useState(true);
+  const [isServiceOpen, setIsServiceOpen] = useState(true);
 
   const isPathActive = (path) => {
     if (path === '/') {
@@ -46,13 +66,12 @@ export default function Sidebar() {
     return pathname?.startsWith(path);
   };
 
-  // Check if any child path is active
   const isSectionActive = (sections) => {
     return sections.some(section => isPathActive(section.path));
   };
 
   return (
-    <aside className="w-64 bg-[#B50508] text-white flex flex-col h-screen shrink-0 shadow-xl">
+    <aside className="w-64 bg-[#B50508] text-white flex flex-col h-screen shrink-0 shadow-xl overflow-hidden">
       
       <div className="h-16 flex items-center px-6 border-b border-white/10 bg-[#7a3e41]/30 backdrop-blur-sm">
         <div className="w-2.5 h-2.5 rounded-full bg-white mr-2 shadow-sm" />
@@ -61,7 +80,23 @@ export default function Sidebar() {
         </span>
       </div>
 
-      <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
+      {/* 
+        FIXED: Changed to overflow-y-auto so you can slide/scroll up and down.
+        Added custom inline styles to hide the scrollbar completely while remaining fully functional.
+      */}
+      <nav 
+        className="flex-1 px-3 py-6 space-y-1 overflow-y-auto"
+        style={{
+          scrollbarWidth: 'none',          /* Firefox */
+          msOverflowStyle: 'none',         /* IE and Edge */
+        }}
+      >
+        {/* Style block to inject webkit scrollbar hiding rule for Chrome/Safari */}
+        <style dangerouslySetInnerHTML={{__html: `
+          nav::-webkit-scrollbar {
+            display: none !important;
+          }
+        `}} />
         
         {/* Admin Dashboard Button */}
         <Link
@@ -128,7 +163,7 @@ export default function Sidebar() {
           )}
         </div>
 
-        {/* About Dropdown (Journey & Certificate) */}
+        {/* About Dropdown */}
         <div className="mt-1">
           <button
             onClick={() => setIsAboutOpen(!isAboutOpen)}
@@ -139,7 +174,7 @@ export default function Sidebar() {
             }`}
           >
             <div className="flex items-center gap-3">
-              <BriefcaseBusiness className={`w-5 h-5 transition-transform duration-200 group-hover:scale-105 ${isSectionActive(aboutSections) ? 'text-white' : 'text-rose-200/60 group-hover:text-white'}`} />
+              <User className={`w-5 h-5 transition-transform duration-200 group-hover:scale-105 ${isSectionActive(aboutSections) ? 'text-white' : 'text-rose-200/60 group-hover:text-white'}`} />
               <span className="text-sm tracking-wide">About</span>
             </div>
             {isAboutOpen ? (
@@ -176,6 +211,56 @@ export default function Sidebar() {
             </div>
           )}
         </div>
+
+        {/* Services Dropdown */}
+        <div className="mt-1">
+          <button
+            onClick={() => setIsServiceOpen(!isServiceOpen)}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 group ${
+              isSectionActive(serviceSections)
+                ? 'bg-white/20 text-white font-semibold backdrop-blur-md shadow-inner border border-white/10'
+                : 'text-rose-100/70 hover:bg-white/10 hover:text-white'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <BriefcaseBusiness className={`w-5 h-5 transition-transform duration-200 group-hover:scale-105 ${isSectionActive(serviceSections) ? 'text-white' : 'text-rose-200/60 group-hover:text-white'}`} />
+              <span className="text-sm tracking-wide">Services</span>
+            </div>
+            {isServiceOpen ? (
+              <ChevronDown className="w-4 h-4" />
+            ) : (
+              <ChevronRight className="w-4 h-4" />
+            )}
+          </button>
+          
+          {isServiceOpen && (
+            <div className="ml-4 mt-1 space-y-1 border-l border-white/10 pl-3">
+              {serviceSections.map((section) => {
+                const Icon = section.icon;
+                const isActive = isPathActive(section.path);
+
+                return (
+                  <Link
+                    key={section.name}
+                    href={section.path}
+                    className={`flex items-center justify-between px-4 py-2.5 rounded-lg transition-all duration-200 group ${
+                      isActive
+                        ? 'bg-white/20 text-white font-semibold backdrop-blur-md shadow-inner border border-white/10'
+                        : 'text-rose-100/70 hover:bg-white/10 hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon className={`w-4 h-4 transition-transform duration-200 group-hover:scale-105 ${isActive ? 'text-white' : 'text-rose-200/60 group-hover:text-white'}`} />
+                      <span className="text-xs tracking-wide">{section.name}</span>
+                    </div>
+                    {isActive && <span className="text-xs text-white/80">▶</span>}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
       </nav>
 
       <div className="p-4 border-t border-white/10 bg-[#7a3e41]/20 backdrop-blur-sm flex items-center gap-3">
