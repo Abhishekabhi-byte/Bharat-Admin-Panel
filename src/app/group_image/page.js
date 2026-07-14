@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Building2, 
+  Images, 
   Eye, 
   Edit2, 
   Trash2, 
@@ -12,66 +12,41 @@ import {
   ChevronLeft, 
   ChevronRight,
   Search,
-  AlertCircle
+  AlertCircle,
+  Maximize2
 } from 'lucide-react';
 
-export default function FoundationPage() {
-  const [foundations, setFoundations] = useState([
-    { 
-      id: 1, 
-      title: 'Green Earth Foundation', 
-      description: 'A non-profit organization dedicated to environmental conservation and sustainable development.',
-      imageUrl: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=250',
-      createdAt: '2026-07-01',
-      status: 'Active'
+export default function GroupImagePage() {
+  const [groupImages, setGroupImages] = useState([
+    {
+      id: 1,
+      imageUrl: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=700&h=450&fit=crop',
+      createdAt: '2026-07-01'
     },
-    { 
-      id: 2, 
-      title: 'Education For All', 
-      description: 'Providing quality education to underprivileged children across rural communities.',
-      imageUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=250',
-      createdAt: '2026-07-05',
-      status: 'Active'
+    {
+      id: 2,
+      imageUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=700&h=450&fit=crop',
+      createdAt: '2026-07-05'
     },
-    { 
-      id: 3, 
-      title: 'Healthcare Initiative', 
-      description: 'Improving healthcare access and medical facilities in remote areas.',
-      imageUrl: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=250',
-      createdAt: '2026-07-06',
-      status: 'Inactive'
+    {
+      id: 3,
+      imageUrl: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=700&h=450&fit=crop',
+      createdAt: '2026-07-06'
     },
-    { 
-      id: 4, 
-      title: 'Women Empowerment Trust', 
-      description: 'Empowering women through skill development, education, and entrepreneurship programs.',
-      imageUrl: 'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=250',
-      createdAt: '2026-07-07',
-      status: 'Active'
+    {
+      id: 4,
+      imageUrl: 'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=700&h=450&fit=crop',
+      createdAt: '2026-07-07'
     },
-    { 
-      id: 5, 
-      title: 'Clean Water Project', 
-      description: 'Providing clean drinking water to communities through sustainable water purification systems.',
-      imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=250',
-      createdAt: '2026-07-08',
-      status: 'Active'
+    {
+      id: 5,
+      imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=700&h=450&fit=crop',
+      createdAt: '2026-07-08'
     },
-    { 
-      id: 6, 
-      title: 'Animal Welfare Society', 
-      description: 'Rescue, rehabilitation, and care for abandoned and injured animals.',
-      imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=250',
-      createdAt: '2026-07-09',
-      status: 'Inactive'
-    },
-    { 
-      id: 7, 
-      title: 'Digital Literacy Mission', 
-      description: 'Bridging the digital divide by providing technology education and access to digital resources.',
-      imageUrl: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=250',
-      createdAt: '2026-07-10',
-      status: 'Active'
+    {
+      id: 6,
+      imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=700&h=450&fit=crop',
+      createdAt: '2026-07-09'
     },
   ]);
 
@@ -80,31 +55,27 @@ export default function FoundationPage() {
   const itemsPerPage = 5;
 
   // Form state
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
-  const [status, setStatus] = useState('Active');
   const [formError, setFormError] = useState('');
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [viewingFoundation, setViewingFoundation] = useState(null);
+  const [viewingImage, setViewingImage] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const fileInputRef = useRef(null);
 
-  // Filter foundations based on search
-  const filteredFoundations = foundations.filter(foundation =>
-    foundation.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    foundation.description.toLowerCase().includes(searchTerm.toLowerCase())
+  // Filter images based on search
+  const filteredImages = groupImages.filter(image =>
+    image.id.toString().includes(searchTerm.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filteredFoundations.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredImages.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentFoundations = filteredFoundations.slice(indexOfFirstItem, indexOfLastItem);
+  const currentImages = filteredImages.slice(indexOfFirstItem, indexOfLastItem);
 
   // Reset to page 1 when search changes
   useEffect(() => {
@@ -137,8 +108,8 @@ export default function FoundationPage() {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setFormError('Image size must be less than 5MB.');
+    if (file.size > 10 * 1024 * 1024) {
+      setFormError('Image size must be less than 10MB.');
       return;
     }
 
@@ -157,80 +128,63 @@ export default function FoundationPage() {
       setFormError('Please select an image.');
       return false;
     }
-    if (!title.trim()) {
-      setFormError('Please enter a foundation title.');
-      return false;
-    }
-    if (!description.trim()) {
-      setFormError('Please enter a description.');
-      return false;
-    }
     return true;
   };
 
-  const handleCreateFoundation = (e) => {
+  const handleCreateImage = (e) => {
     e.preventDefault();
     setFormError('');
 
     if (!validateForm()) return;
 
-    const newFoundation = {
+    const newImage = {
       id: Date.now(),
-      title: title.trim(),
-      description: description.trim(),
       imageUrl: previewUrl,
-      status: status,
       createdAt: new Date().toISOString().split('T')[0]
     };
 
-    setFoundations([newFoundation, ...foundations]);
+    setGroupImages([newImage, ...groupImages]);
     setCurrentPage(1);
     resetForm();
     setIsModalOpen(false);
   };
 
-  const handleEdit = (foundation) => {
-    setEditingId(foundation.id);
-    setTitle(foundation.title);
-    setDescription(foundation.description);
-    setPreviewUrl(foundation.imageUrl);
-    setStatus(foundation.status);
+  const handleEdit = (image) => {
+    setEditingId(image.id);
+    setPreviewUrl(image.imageUrl);
     setImageFile(null);
     setFormError('');
     setIsModalOpen(true);
   };
 
-  const handleUpdateFoundation = (e) => {
+  const handleUpdateImage = (e) => {
     e.preventDefault();
     setFormError('');
 
     if (!validateForm()) return;
 
-    const updatedFoundations = foundations.map(foundation =>
-      foundation.id === editingId
-        ? { 
-            ...foundation, 
-            title: title.trim(), 
-            description: description.trim(),
-            imageUrl: previewUrl,
-            status: status
+    const updatedImages = groupImages.map(image =>
+      image.id === editingId
+        ? {
+            ...image,
+            imageUrl: previewUrl
           }
-        : foundation
+        : image
     );
 
-    setFoundations(updatedFoundations);
+    setGroupImages(updatedImages);
     resetForm();
     setIsModalOpen(false);
     setEditingId(null);
   };
 
   const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this foundation? This action cannot be undone.')) {
+    if (window.confirm('Are you sure you want to delete this image? This action cannot be undone.')) {
       setIsDeleting(true);
       setTimeout(() => {
-        const updatedFoundations = foundations.filter(foundation => foundation.id !== id);
-        setFoundations(updatedFoundations);
-        const newTotalPages = Math.ceil(updatedFoundations.length / itemsPerPage);
+        const updatedImages = groupImages.filter(image => image.id !== id);
+        setGroupImages(updatedImages);
+        const newTotalPages = Math.ceil(updatedImages.length / itemsPerPage);
         if (currentPage > newTotalPages && newTotalPages > 0) {
           setCurrentPage(newTotalPages);
         }
@@ -239,8 +193,8 @@ export default function FoundationPage() {
     }
   };
 
-  const handleView = (foundation) => {
-    setViewingFoundation(foundation);
+  const handleView = (image) => {
+    setViewingImage(image);
     setIsViewModalOpen(true);
   };
 
@@ -250,9 +204,6 @@ export default function FoundationPage() {
     }
     setImageFile(null);
     setPreviewUrl('');
-    setTitle('');
-    setDescription('');
-    setStatus('Active');
     setEditingId(null);
     setFormError('');
     if (fileInputRef.current) {
@@ -265,23 +216,6 @@ export default function FoundationPage() {
     resetForm();
   };
 
-  const getStatusColor = (status) => {
-    switch(status) {
-      case 'Active':
-        return 'bg-green-100 text-green-700 border-green-200';
-      case 'Inactive':
-        return 'bg-yellow-100 text-yellow-700 border-yellow-200';
-      default:
-        return 'bg-gray-100 text-gray-700 border-gray-200';
-    }
-  };
-
-  const truncateText = (text, maxLength = 40) => {
-    if (!text) return '';
-    if (text.length <= maxLength) return text;
-    return text.slice(0, maxLength) + '…';
-  };
-
   return (
     <div className="min-h-screen w-full  flex items-start justify-center p-3 md:p-6">
       <div className="w-full max-w-7xl bg-slate-900 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20">
@@ -290,10 +224,10 @@ export default function FoundationPage() {
           {/* Table Header with Search */}
           <div className="flex justify-between items-center p-4 border-b border-red-200/50">
             <div className="flex items-center gap-3">
-              <Building2 className="w-5 h-5 text-red-600" />
-              <span className="font-semibold text-gray-800">Foundations</span>
+              <Images className="w-5 h-5 text-red-600" />
+              <span className="font-semibold text-gray-800">Group Images</span>
               <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-medium">
-                {filteredFoundations.length}
+                {filteredImages.length}
               </span>
             </div>
             <div className="flex items-center gap-3">
@@ -301,7 +235,7 @@ export default function FoundationPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search foundations..."
+                  placeholder="Search images..."
                   className="w-48 md:w-64 pl-9 pr-4 py-2 text-sm text-gray-800 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 bg-white/80"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -315,7 +249,7 @@ export default function FoundationPage() {
                 className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-all duration-300 whitespace-nowrap"
               >
                 <Plus className="w-4 h-4" />
-                Add Foundation
+                Add Image
               </button>
             </div>
           </div>
@@ -324,80 +258,61 @@ export default function FoundationPage() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-red-50/50 border-b border-red-200/50 text-gray-700 font-semibold uppercase text-xs tracking-wider">
-                  <th className="px-6 py-4 w-[120px]">Image</th>
-                  <th className="px-6 py-4 min-w-[150px]">Title</th>
-                  <th className="px-6 py-4 min-w-[200px]">Description</th>
-                  <th className="px-6 py-4 w-[120px] text-center">Status</th>
+                  <th className="px-6 py-4 w-[180px]">Image</th>
                   <th className="px-6 py-4 w-[160px] text-center">Created Date</th>
                   <th className="px-6 py-4 w-[160px] text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-red-100/50">
-                {currentFoundations.length === 0 ? (
+                {currentImages.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="text-center py-16">
-                      <Building2 className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-                      <p className="font-medium text-gray-500 text-base">No foundations found</p>
-                      <p className="text-sm text-gray-400 mt-1">Try adjusting your search or add a new foundation</p>
+                    <td colSpan="3" className="text-center py-16">
+                      <Images className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                      <p className="font-medium text-gray-500 text-base">No images found</p>
+                      <p className="text-sm text-gray-400 mt-1">Try adjusting your search or add a new image</p>
                     </td>
                   </tr>
                 ) : (
-                  currentFoundations.map((foundation) => (
-                    <tr key={foundation.id} className="hover:bg-red-50/30 transition-colors duration-150">
+                  currentImages.map((image) => (
+                    <tr key={image.id} className="hover:bg-red-50/30 transition-colors duration-150">
                       <td className="px-6 py-4">
-                        <div className="w-16 h-16 rounded-lg overflow-hidden border border-red-200 shadow-sm">
+                        <div className="relative w-[180px] h-[116px] rounded-lg overflow-hidden border border-red-200 shadow-sm" style={{ aspectRatio: '700/450' }}>
                           <img 
-                            src={foundation.imageUrl} 
-                            alt={foundation.title} 
+                            src={image.imageUrl} 
+                            alt={`Group Image ${image.id}`} 
                             className="w-full h-full object-cover"
                             onError={(e) => {
-                              e.target.src = 'https://via.placeholder.com/100x100/FF6B6B/FFFFFF?text=No+Image';
+                              e.target.src = 'https://via.placeholder.com/700x450/FF6B6B/FFFFFF?text=No+Image';
                             }}
                           />
+                          <div className="absolute bottom-1 right-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">
+                            700×450
+                          </div>
                         </div>
-                      </td>
-                      
-                      <td className="px-6 py-4">
-                        <span className="font-semibold text-gray-800 block text-base">{foundation.title}</span>
-                      </td>
-
-                      <td className="px-6 py-4">
-                        <span className="text-sm text-gray-600 block max-w-xs" title={foundation.description}>
-                          {truncateText(foundation.description, 40)}
-                        </span>
-                      </td>
-
-                      <td className="px-6 py-4 text-center">
-                        <span className={`inline-flex items-center px-3 py-1.5 rounded-full border text-xs font-medium ${getStatusColor(foundation.status)}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full mr-1.5 
-                            ${foundation.status === 'Active' ? 'bg-green-500' : 'bg-yellow-500'}
-                          `} />
-                          {foundation.status}
-                        </span>
                       </td>
 
                       <td className="px-6 py-4 text-gray-600 font-medium text-center text-sm">
-                        {foundation.createdAt}
+                        {image.createdAt}
                       </td>
 
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-2">
                           <button 
-                            onClick={() => handleView(foundation)}
+                            onClick={() => handleView(image)}
                             title="View" 
                             className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
                           >
                             <Eye className="w-4.5 h-4.5" />
                           </button>
                           <button 
-                            onClick={() => handleEdit(foundation)}
+                            onClick={() => handleEdit(image)}
                             title="Edit" 
                             className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
                           >
                             <Edit2 className="w-4.5 h-4.5" />
                           </button>
                           <button 
-                            onClick={() => handleDelete(foundation.id)}
+                            onClick={() => handleDelete(image.id)}
                             disabled={isDeleting}
                             title="Delete" 
                             className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200 disabled:opacity-50"
@@ -414,14 +329,14 @@ export default function FoundationPage() {
           </div>
 
           {/* Pagination */}
-          {filteredFoundations.length > 0 && (
+          {filteredImages.length > 0 && (
             <div className="px-6 py-4 border-t border-red-200/50 flex flex-col sm:flex-row justify-between items-center gap-4 bg-red-50/30">
               <span className="font-medium text-gray-600 text-sm">
                 Showing <span className="text-gray-800 font-bold">{indexOfFirstItem + 1}</span> to{' '}
                 <span className="text-gray-800 font-bold">
-                  {Math.min(indexOfLastItem, filteredFoundations.length)}
+                  {Math.min(indexOfLastItem, filteredImages.length)}
                 </span>{' '}
-                of <span className="text-gray-800 font-bold">{filteredFoundations.length}</span> foundations
+                of <span className="text-gray-800 font-bold">{filteredImages.length}</span> images
               </span>
 
               <div className="flex items-center gap-1.5">
@@ -486,12 +401,12 @@ export default function FoundationPage() {
                 {editingId ? (
                   <>
                     <Edit2 className="w-5 h-5 text-red-600" />
-                    Edit Foundation
+                    Edit Image
                   </>
                 ) : (
                   <>
                     <Plus className="w-5 h-5 text-red-600" />
-                    Add Foundation
+                    Upload Image
                   </>
                 )}
               </h3>
@@ -510,20 +425,23 @@ export default function FoundationPage() {
               </div>
             )}
 
-            <form onSubmit={editingId ? handleUpdateFoundation : handleCreateFoundation} className="space-y-4 text-sm">
-              {/* Image */}
+            <form onSubmit={editingId ? handleUpdateImage : handleCreateImage} className="space-y-4 text-sm">
+              {/* Image Upload with Fixed Dimensions */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
-                  Foundation Image *
+                  Image * <span className="font-normal text-gray-400">(700×450px recommended)</span>
                 </label>
                 {previewUrl ? (
-                  <div className="relative w-full h-48 rounded-lg overflow-hidden border-2 border-red-200 shadow-sm">
+                  <div className="relative w-full rounded-lg overflow-hidden border-2 border-red-200 shadow-sm" style={{ aspectRatio: '700/450' }}>
                     <img 
                       key={previewUrl}
                       src={previewUrl} 
                       alt="Preview" 
                       className="w-full h-full object-cover" 
                     />
+                    <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                      700 × 450
+                    </div>
                     <button
                       type="button"
                       onClick={() => {
@@ -542,10 +460,11 @@ export default function FoundationPage() {
                     </button>
                   </div>
                 ) : (
-                  <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-red-300 rounded-lg cursor-pointer hover:bg-red-50 transition-all duration-200 hover:border-red-500">
-                    <Upload className="w-10 h-10 text-red-400 mb-2" />
+                  <label className="flex flex-col items-center justify-center w-full rounded-lg border-2 border-dashed border-red-300 cursor-pointer hover:bg-red-50 transition-all duration-200 hover:border-red-500" style={{ aspectRatio: '700/450' }}>
+                    <Upload className="w-12 h-12 text-red-400 mb-2" />
                     <span className="text-sm font-medium text-gray-700">Click to upload image</span>
-                    <span className="text-xs text-gray-400 mt-1">PNG, JPG, GIF up to 5MB</span>
+                    <span className="text-xs text-gray-400 mt-1">PNG, JPG, GIF, WEBP up to 10MB</span>
+                    <span className="text-xs text-gray-400">Recommended: 700×450 pixels</span>
                     <input 
                       ref={fileInputRef}
                       type="file" 
@@ -555,57 +474,6 @@ export default function FoundationPage() {
                     />
                   </label>
                 )}
-              </div>
-
-              {/* Title */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
-                  Foundation Title *
-                </label>
-                <input 
-                  type="text" 
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Green Earth Foundation"
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
-                  maxLength={100}
-                />
-                <div className="text-xs text-gray-400 mt-1 text-right">
-                  {title.length}/100
-                </div>
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
-                  Description *
-                </label>
-                <textarea 
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe the foundation's mission and work..."
-                  rows="3"
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all resize-none"
-                  maxLength={500}
-                />
-                <div className="text-xs text-gray-400 mt-1 text-right">
-                  {description.length}/500
-                </div>
-              </div>
-
-              {/* Status */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
-                  Status
-                </label>
-                <select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all bg-white"
-                >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
               </div>
 
               <div className="flex gap-3 pt-2">
@@ -620,7 +488,7 @@ export default function FoundationPage() {
                   type="submit"
                   className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all duration-300"
                 >
-                  {editingId ? 'Update Foundation' : 'Save Foundation'}
+                  {editingId ? 'Update Image' : 'Save Image'}
                 </button>
               </div>
             </form>
@@ -629,21 +497,21 @@ export default function FoundationPage() {
       )}
 
       {/* View Modal */}
-      {isViewModalOpen && viewingFoundation && (
+      {isViewModalOpen && viewingImage && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => {
           setIsViewModalOpen(false);
-          setViewingFoundation(null);
+          setViewingImage(null);
         }}>
-          <div className="bg-white rounded-xl w-full max-w-lg p-6 shadow-xl border border-red-200" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-xl w-full max-w-2xl p-6 shadow-xl border border-red-200" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-red-600" />
-                Foundation Details
+                <Images className="w-5 h-5 text-red-600" />
+                Image Details
               </h3>
               <button 
                 onClick={() => {
                   setIsViewModalOpen(false);
-                  setViewingFoundation(null);
+                  setViewingImage(null);
                 }}
                 className="p-2 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
               >
@@ -652,44 +520,34 @@ export default function FoundationPage() {
             </div>
 
             <div className="space-y-5">
-              {/* Image */}
-              <div className="w-full h-56 rounded-lg overflow-hidden border-2 border-red-200 shadow-md">
+              {/* Image with Fixed Dimensions */}
+              <div className="w-full rounded-lg overflow-hidden border-2 border-red-200 shadow-md" style={{ aspectRatio: '700/450' }}>
                 <img 
-                  src={viewingFoundation.imageUrl} 
-                  alt={viewingFoundation.title} 
+                  src={viewingImage.imageUrl} 
+                  alt={`Group Image ${viewingImage.id}`} 
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/600x400/FF6B6B/FFFFFF?text=No+Image';
+                    e.target.src = 'https://via.placeholder.com/700x450/FF6B6B/FFFFFF?text=No+Image';
                   }}
                 />
               </div>
               
+              {/* Dimensions Info */}
+              <div className="flex items-center gap-2 justify-center text-sm text-gray-500 bg-gray-50 px-3 py-1.5 rounded-lg">
+                <Maximize2 className="w-4 h-4" />
+                <span>700 × 450 pixels</span>
+              </div>
+
               {/* Details */}
               <div className="space-y-4 bg-red-50/50 p-4 rounded-lg border border-red-200/50">
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Title</p>
-                  <p className="text-base font-semibold text-gray-800 mt-1">{viewingFoundation.title}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Image ID</p>
+                  <p className="text-base font-semibold text-gray-800 mt-1">#{viewingImage.id}</p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Description</p>
-                  <p className="text-sm text-gray-700 mt-1 leading-relaxed">{viewingFoundation.description}</p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Status</p>
-                    <span className={`inline-flex items-center px-3 py-1.5 rounded-full border text-xs font-medium mt-1.5 ${getStatusColor(viewingFoundation.status)}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full mr-1.5 
-                        ${viewingFoundation.status === 'Active' ? 'bg-green-500' : 'bg-yellow-500'}
-                      `} />
-                      {viewingFoundation.status}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Created Date</p>
-                    <p className="text-sm font-medium text-gray-700 mt-1.5">{viewingFoundation.createdAt}</p>
-                  </div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Created Date</p>
+                  <p className="text-sm font-medium text-gray-700 mt-1">{viewingImage.createdAt}</p>
                 </div>
               </div>
 
@@ -697,7 +555,7 @@ export default function FoundationPage() {
               <button
                 onClick={() => {
                   setIsViewModalOpen(false);
-                  setViewingFoundation(null);
+                  setViewingImage(null);
                 }}
                 className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all duration-300"
               >

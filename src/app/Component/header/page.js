@@ -11,7 +11,22 @@ const sections = [
   { name: "Journey", path: "/journey" },
   { name: "Team", path: "/team" },
   { name: "Services", path: "/services" },
-  { name: "Contact", path: "/contact" }
+  { name: "Contact", path: "/contact" },
+   { name: "Brand logo", path: "/logo"},
+   { name: "Festival", path: "/festival"},
+   { name: "Team Image", path: "/Team_image"},
+   { name: "Celebrating Years", path: "/celebrating_years"},
+    { name: "Legacy", path: "/legacy"},
+     { name: "Celebrating Moments", path: "/celebrating_moments"},
+     { name: "Employee Award", path: "/employee_award"},
+   { name: "Journey", path: "/journey"},
+  { name: "Certificate", path: "/certificate"},
+  { name: "Integrated Services", path: "/services"},
+  { name: "Portfolio showcase", path: "/portfolio_showcase"},
+ { name: "Job Post", path: "/job_post"},
+ { name: "Projects", path: "/project"},    
+     { name: "Team Group Image", path: "/group_image"},
+
 ];
 
 export default function Header() {

@@ -328,204 +328,248 @@ export default function JourneyPage() {
   };
 
   return (
-    <div className="space-y-5 bg-[#7d3431] p-6 min-h-screen max-w-7xl mx-auto  shadow-xl">
-      
-      {/* Integrated Title / Control Section */}
-      <div className="bg-white rounded-xl p-4 border border-[#cb8c89]/40 shadow-md overflow-hidden flex flex-col justify-between">
+    <div className="min-h-screen w-full  flex items-start justify-center p-3 md:p-6 relative overflow-hidden">
+      {/* Side Blur Effect - Left */}
+     
+
+      <div className="w-full max-w-7xl bg-slate-900 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20 relative z-10">
         
-        {/* Table Header with Search and Integrated Add Button */}
-      <div className="mb-4 flex justify-end">
-  <div className="flex items-center gap-3">
-    <div className="relative w-80">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black/40" />
-      <input
-        type="text"
-        placeholder="Search our journeys..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="w-full text-black pl-10 pr-4 py-2 border border-red-200 rounded-lg"
-      />
-    </div>
-
-    <button
-      onClick={() => setIsModalOpen(true)}
-      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-xl whitespace-nowrap"
-    >
-      <Plus className="w-4 h-4" />
-      Add Our Journey
-    </button>
-  </div>
-</div>
-
-        {/* Table View */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-sm">
-            <thead>
-              <tr className="bg-gradient-to-r from-[#7d3431]/10 to-[#cb8c89]/10 border-b border-[#cb8c89]/40 text-[#7d3431] font-bold uppercase text-xs tracking-wider">
-                <th className="px-6 py-4 w-[100px]">Image</th>
-                <th className="px-6 py-4 w-[220px]">Title</th>
-                <th className="px-6 py-4">Description</th>
-                <th className="px-6 py-4 w-[140px]">Date Range</th>
-                <th className="px-6 py-4 w-[150px]">Category</th>
-                <th className="px-6 py-4 w-[110px]">Duration</th>
-                <th className="px-6 py-4 w-[150px] text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#7d3431]/10">
-              {currentEntries.length === 0 ? (
-                <tr>
-                  <td colSpan="7" className="text-center py-16 text-[#7d3431]/40">
-                    <Clock className="w-12 h-12 mx-auto opacity-30 mb-2 text-[#7d3431]" />
-                    <p className="font-semibold text-sm">No journey entries found matching search</p>
-                  </td>
-                </tr>
-              ) : (
-                currentEntries.map((entry) => {
-                  const CategoryIcon = getCategoryIcon(entry.category);
-                  return (
-                    <tr key={entry.id} className="hover:bg-[#7d3431]/5 transition-colors">
-                      <td className="px-6 py-3.5">
-                        <div className="w-14 h-14 rounded-lg bg-slate-50 overflow-hidden border border-[#cb8c89]/40 shadow-xs">
-                          <img src={entry.imageUrl} alt={entry.title} className="w-full h-full object-cover" />
-                        </div>
-                      </td>
-
-                      <td className="px-6 py-3.5">
-                        <span className="font-bold text-black block truncate max-w-[200px]">{entry.title}</span>
-                      </td>
-
-                      <td className="px-3 py-3.5">
-                        <span className="text-black/70 block max-w-xs xl:max-w-md truncate">{truncateText(entry.description, 15)}</span>
-                      </td>
-
-                      <td className="px-6 py-3.5 text-black/60 font-medium whitespace-nowrap text-xs">
-                        {formatDateRange(entry)}
-                      </td>
-
-                      <td className="px-6 py-3.5 whitespace-nowrap">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${getCategoryColor(entry.category)}`}>
-                          <CategoryIcon className="w-3 h-3 flex-shrink-0" />
-                          {getCategoryLabel(entry.category)}
-                        </span>
-                      </td>
-
-                      <td className="px-6 py-3.5 text-black/70 font-medium whitespace-nowrap">
-                        <span className="inline-flex items-center gap-1 bg-[#7d3431]/5 px-2.5 py-1 rounded-lg border border-[#cb8c89]/40 text-xs">
-                          <Clock className="w-3 h-3 text-[#7d3431]/60" />
-                          {getDuration(entry)} {getDuration(entry) === 1 ? 'year' : 'years'}
-                        </span>
-                      </td>
-
-                      <td className="px-6 py-3.5 text-right">
-                        <div className="flex justify-end gap-1">
-                          <button 
-                            onClick={() => handleView(entry)}
-                            title="View Details" 
-                            className="p-2 text-[#7d3431]/60 rounded-lg hover:text-[#7d3431] hover:bg-[#7d3431]/10 transition-all duration-200"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => handleEdit(entry)}
-                            title="Edit" 
-                            className="p-2 text-[#cb8c89] rounded-lg hover:text-[#7d3431] hover:bg-[#cb8c89]/10 transition-all duration-200"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => handleDelete(entry.id)}
-                            title="Delete" 
-                            className="p-2 text-black/40 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination Controls */}
-        {filteredEntries.length > 0 && (
-          <div className="px-6 py-4 border-t border-[#7d3431]/10 flex flex-col sm:flex-row justify-between items-center gap-4 bg-gradient-to-r from-[#7d3431]/5 to-[#cb8c89]/5">
-            <span className="font-medium text-black/70 text-sm">
-              Showing <span className="text-[#7d3431] font-bold">{indexOfFirstItem + 1}</span> to{' '}
-              <span className="text-[#7d3431] font-bold">
-                {Math.min(indexOfLastItem, filteredEntries.length)}
-              </span>{' '}
-              of <span className="text-[#7d3431] font-bold">{filteredEntries.length}</span> records
-            </span>
-
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="p-2 rounded-lg border border-[#cb8c89]/40 bg-white text-[#7d3431]/60 hover:bg-[#7d3431]/10 hover:border-[#7d3431] disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-
-              {Array.from({ length: totalPages }, (_, index) => {
-                const pageNum = index + 1;
-                const isSelected = currentPage === pageNum;
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => handlePageChange(pageNum)}
-                    className={`w-8 h-8 rounded-lg text-xs font-bold transition-all duration-200 ${
-                      isSelected
-                        ? 'bg-gradient-to-r from-[#7d3431] to-[#cb8c89] text-white shadow-md shadow-[#7d3431]/30'
-                        : 'bg-white border border-[#cb8c89]/40 text-black hover:bg-[#7d3431]/10 hover:border-[#7d3431]'
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
-
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="p-2 rounded-lg border border-[#cb8c89]/40 bg-white text-[#7d3431]/60 hover:bg-[#7d3431]/10 hover:border-[#7d3431] disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
+        {/* Table */}
+        <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 shadow-xl overflow-hidden flex flex-col justify-between">
+          
+          {/* Table Header with Search */}
+          <div className="p-4 border-b border-red-200/50">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+              <div className="flex items-center gap-3">
+                <Clock className="w-5 h-5 text-red-600" />
+                <span className="font-semibold text-gray-800">Journey</span>
+                <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-medium">
+                  {filteredEntries.length}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <div className="relative flex-1 sm:flex-none">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search journeys..."
+                    className="w-full sm:w-64 pl-9 pr-4 py-2 text-sm text-gray-800 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 bg-white/80"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-all duration-300 whitespace-nowrap"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Journey
+                </button>
+              </div>
             </div>
           </div>
-        )}
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-red-50/50 border-b border-red-200/50 text-gray-700 font-semibold uppercase text-xs tracking-wider">
+                  <th className="px-6 py-4 w-[100px]">Image</th>
+                  <th className="px-6 py-4 w-[220px]">Title</th>
+                  <th className="px-6 py-4">Description</th>
+                  <th className="px-6 py-4 w-[140px]">Date Range</th>
+                  <th className="px-6 py-4 w-[150px]">Category</th>
+                  <th className="px-6 py-4 w-[110px]">Duration</th>
+                  <th className="px-6 py-4 w-[150px] text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-red-100/50">
+                {currentEntries.length === 0 ? (
+                  <tr>
+                    <td colSpan="7" className="text-center py-16">
+                      <Clock className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                      <p className="font-medium text-gray-500 text-base">No journey entries found</p>
+                      <p className="text-sm text-gray-400 mt-1">Try adjusting your search or add a new entry</p>
+                    </td>
+                  </tr>
+                ) : (
+                  currentEntries.map((entry) => {
+                    const CategoryIcon = getCategoryIcon(entry.category);
+                    return (
+                      <tr key={entry.id} className="hover:bg-red-50/30 transition-colors duration-150">
+                        <td className="px-6 py-4">
+                          <div className="w-14 h-14 rounded-lg overflow-hidden border border-red-200 shadow-sm">
+                            <img 
+                              src={entry.imageUrl} 
+                              alt={entry.title} 
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.src = 'https://via.placeholder.com/100x100/FF6B6B/FFFFFF?text=No+Image';
+                              }}
+                            />
+                          </div>
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <span className="font-semibold text-gray-800 block truncate max-w-[200px]">{truncateText(entry.title, 10)}</span>
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <span className="text-sm text-gray-600 block max-w-xs truncate">{truncateText(entry.description, 20)}</span>
+                        </td>
+
+                        <td className="px-6 py-4 text-gray-600 font-medium whitespace-nowrap text-xs">
+                          {formatDateRange(entry)}
+                        </td>
+
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium ${getCategoryColor(entry.category)}`}>
+                            <CategoryIcon className="w-3.5 h-3.5 flex-shrink-0" />
+                            {getCategoryLabel(entry.category)}
+                          </span>
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <span className="inline-flex items-center gap-1.5 bg-red-50/80 px-3 py-1.5 rounded-full border border-red-200/50 text-xs font-medium text-gray-700">
+                            <Clock className="w-3.5 h-3.5 text-red-600" />
+                            {getDuration(entry)} {getDuration(entry) === 1 ? 'year' : 'years'}
+                          </span>
+                        </td>
+
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex justify-end gap-2">
+                            <button 
+                              onClick={() => handleView(entry)}
+                              title="View" 
+                              className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                            >
+                              <Eye className="w-4.5 h-4.5" />
+                            </button>
+                            <button 
+                              onClick={() => handleEdit(entry)}
+                              title="Edit" 
+                              className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                            >
+                              <Edit2 className="w-4.5 h-4.5" />
+                            </button>
+                            <button 
+                              onClick={() => handleDelete(entry.id)}
+                              title="Delete" 
+                              className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                            >
+                              <Trash2 className="w-4.5 h-4.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          {filteredEntries.length > 0 && (
+            <div className="px-6 py-4 border-t border-red-200/50 flex flex-col sm:flex-row justify-between items-center gap-4 bg-red-50/30">
+              <span className="font-medium text-gray-600 text-sm">
+                Showing <span className="text-gray-800 font-bold">{indexOfFirstItem + 1}</span> to{' '}
+                <span className="text-gray-800 font-bold">
+                  {Math.min(indexOfLastItem, filteredEntries.length)}
+                </span>{' '}
+                of <span className="text-gray-800 font-bold">{filteredEntries.length}</span> entries
+              </span>
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="p-2 rounded-lg border border-red-200/50 bg-white text-gray-600 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+
+                {Array.from({ length: Math.min(totalPages, 5) }, (_, index) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = index + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = index + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + index;
+                  } else {
+                    pageNum = currentPage - 2 + index;
+                  }
+                  
+                  const isSelected = currentPage === pageNum;
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`w-9 h-9 rounded-lg text-sm font-bold transition-all duration-200 ${
+                        isSelected
+                          ? 'bg-red-600 text-white shadow-md'
+                          : 'bg-white border border-red-200/50 text-gray-700 hover:bg-red-50 hover:border-red-300'
+                      }`}
+                      aria-label={`Go to page ${pageNum}`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="p-2 rounded-lg border border-red-200/50 bg-white text-gray-600 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+                  aria-label="Next page"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Dynamic Add/Edit Modal */}
+      {/* Add/Edit Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-2xl border-2 border-[#7d3431]/20 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-5 pb-2 border-b border-[#7d3431]/10">
-              <h3 className="text-lg font-bold text-[#7d3431]">
-                {editingId ? 'Edit Journey Milestone' : 'Add New Journey Milestone'}
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={closeModal}>
+          <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl border border-red-200 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                {editingId ? (
+                  <>
+                    <Edit2 className="w-5 h-5 text-red-600" />
+                    Edit Journey
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-5 h-5 text-red-600" />
+                    Add Journey
+                  </>
+                )}
               </h3>
               <button 
                 onClick={closeModal} 
-                className="p-1.5 rounded-lg text-black/40 hover:bg-[#7d3431]/10 hover:text-[#7d3431] transition-all"
+                className="p-2 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={editingId ? handleUpdateEntry : handleCreateEntry} className="space-y-4 text-sm">
+              {/* Image */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#7d3431] mb-1.5">
-                  Milestone Image *
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                  Image *
                 </label>
                 {previewUrl ? (
-                  <div className="relative w-full h-40 rounded-lg overflow-hidden border-2 border-[#7d3431]/30 shadow-inner">
+                  <div className="relative w-full h-48 rounded-lg overflow-hidden border-2 border-red-200 shadow-sm">
                     <img 
-                      key={previewUrl} 
+                      key={previewUrl}
                       src={previewUrl} 
-                      alt="Preview Source" 
+                      alt="Preview" 
                       className="w-full h-full object-cover" 
                     />
                     <button
@@ -537,16 +581,16 @@ export default function JourneyPage() {
                         setPreviewUrl('');
                         setImage(null);
                       }}
-                      className="absolute top-2 right-2 p-1.5 bg-gradient-to-r from-[#7d3431] to-[#cb8c89] text-white rounded-full shadow-md hover:brightness-110 transition-all"
+                      className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded-full shadow-lg hover:bg-red-700 transition-all"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
                 ) : (
-                  <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-[#cb8c89] rounded-lg cursor-pointer hover:bg-[#7d3431]/5 transition-all duration-200 hover:border-[#7d3431]">
-                    <Upload className="w-8 h-8 text-[#7d3431]/50 mb-2" />
-                    <span className="text-sm font-semibold text-black">Click to upload milestone photo</span>
-                    <span className="text-xs text-black/40 mt-1">PNG, JPG, JPEG up to 5MB</span>
+                  <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-red-300 rounded-lg cursor-pointer hover:bg-red-50 transition-all duration-200 hover:border-red-500">
+                    <Upload className="w-10 h-10 text-red-400 mb-2" />
+                    <span className="text-sm font-medium text-gray-700">Click to upload image</span>
+                    <span className="text-xs text-gray-400 mt-1">PNG, JPG, GIF up to 5MB</span>
                     <input 
                       type="file" 
                       accept="image/*" 
@@ -557,8 +601,9 @@ export default function JourneyPage() {
                 )}
               </div>
 
+              {/* Title */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#7d3431] mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
                   Title *
                 </label>
                 <input 
@@ -566,31 +611,39 @@ export default function JourneyPage() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Infrastructure Modernization"
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#cb8c89]/60 text-sm text-black focus:outline-none focus:border-[#7d3431] focus:ring-2 focus:ring-[#7d3431]/20 transition-all bg-white"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
+                  maxLength={300}
                 />
+                <div className="text-xs text-gray-400 mt-1 text-right">
+                  {title.length}/300
+                </div>
               </div>
 
+              {/* Description */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#7d3431] mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
                   Description *
                 </label>
                 <textarea 
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Provide precise execution summaries or achievements..."
+                  placeholder="Describe the journey milestone..."
                   rows="3"
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#cb8c89]/60 text-sm text-black focus:outline-none focus:border-[#7d3431] focus:ring-2 focus:ring-[#7d3431]/20 transition-all resize-none bg-white"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all resize-none"
+            
                 />
+             
               </div>
 
+              {/* Category */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#7d3431] mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
                   Category *
                 </label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#cb8c89]/60 text-sm text-black focus:outline-none focus:border-[#7d3431] focus:ring-2 focus:ring-[#7d3431]/20 transition-all bg-white"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all bg-white"
                 >
                   {categories.map((cat) => (
                     <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -598,20 +651,21 @@ export default function JourneyPage() {
                 </select>
               </div>
 
+              {/* Dates */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#7d3431] mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
                     Start Date *
                   </label>
                   <input 
                     type="date" 
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#cb8c89]/60 text-sm text-black focus:outline-none focus:border-[#7d3431] focus:ring-2 focus:ring-[#7d3431]/20 transition-all bg-white"
+                    className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#7d3431] mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
                     End Date
                   </label>
                   <input 
@@ -619,14 +673,15 @@ export default function JourneyPage() {
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
                     disabled={isPresent}
-                    className={`w-full px-3.5 py-2.5 rounded-lg border text-sm text-black focus:outline-none focus:border-[#7d3431] focus:ring-2 focus:ring-[#7d3431]/20 transition-all bg-white ${
-                      isPresent ? 'bg-gray-100 border-gray-200 cursor-not-allowed' : 'border-[#cb8c89]/60'
+                    className={`w-full px-4 py-2.5 rounded-lg border text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all ${
+                      isPresent ? 'bg-gray-100 border-gray-200 cursor-not-allowed' : 'border-gray-200'
                     }`}
                   />
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-1">
+              {/* Present Checkbox */}
+              <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
                   id="isPresent"
@@ -637,26 +692,26 @@ export default function JourneyPage() {
                       setEndDate('');
                     }
                   }}
-                  className="w-4 h-4 rounded border-[#7d3431]/30 text-[#7d3431] focus:ring-[#7d3431]/20"
+                  className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500"
                 />
-                <label htmlFor="isPresent" className="text-sm font-medium text-black/70">
-                  Present (ongoing task)
+                <label htmlFor="isPresent" className="text-sm font-medium text-gray-700">
+                  Present (ongoing)
                 </label>
               </div>
 
-              <div className="flex gap-3 pt-3 border-t border-[#7d3431]/10">
+              <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="flex-1 py-2.5 border border-[#cb8c89] rounded-lg font-bold text-[#7d3431] hover:bg-[#7d3431]/5 transition-all duration-200"
+                  className="flex-1 py-2.5 border border-gray-200 rounded-lg font-semibold text-gray-600 hover:bg-gray-50 transition-all duration-200"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 bg-gradient-to-r from-[#7d3431] to-[#cb8c89] text-white rounded-lg font-bold hover:shadow-lg hover:shadow-[#7d3431]/30 hover:brightness-110 transition-all duration-300"
+                  className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all duration-300"
                 >
-                  {editingId ? 'Update Milestone' : 'Save Milestone'}
+                  {editingId ? 'Update Journey' : 'Save Journey'}
                 </button>
               </div>
             </form>
@@ -664,70 +719,85 @@ export default function JourneyPage() {
         </div>
       )}
 
-      {/* Detail View Modal */}
+      {/* View Modal */}
       {isViewModalOpen && viewingEntry && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl w-full max-w-lg p-6 shadow-2xl border-2 border-[#7d3431]/20">
-            <div className="flex justify-between items-center mb-4 pb-2 border-b border-[#7d3431]/10">
-              <h3 className="text-lg font-bold text-[#7d3431]">Milestone Specification Overview</h3>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => {
+          setIsViewModalOpen(false);
+          setViewingEntry(null);
+        }}>
+          <div className="bg-white rounded-xl w-full max-w-lg p-6 shadow-xl border border-red-200" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <Clock className="w-5 h-5 text-red-600" />
+                Journey Details
+              </h3>
               <button 
                 onClick={() => {
                   setIsViewModalOpen(false);
                   setViewingEntry(null);
                 }}
-                className="p-1.5 rounded-lg text-black/40 hover:bg-[#7d3431]/10 hover:text-[#7d3431] transition-all"
+                className="p-2 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-4">
-              <div className="w-full h-48 rounded-lg overflow-hidden border-2 border-[#cb8c89]/40 shadow-sm">
+            <div className="space-y-5">
+              {/* Image */}
+              <div className="w-full h-56 rounded-lg overflow-hidden border-2 border-red-200 shadow-md">
                 <img 
                   src={viewingEntry.imageUrl} 
                   alt={viewingEntry.title} 
-                  className="w-full h-full object-cover" 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.src = 'https://via.placeholder.com/600x400/FF6B6B/FFFFFF?text=No+Image';
+                  }}
                 />
               </div>
 
-              <div className="space-y-3.5 bg-[#7d3431]/5 p-4 rounded-xl border border-[#cb8c89]/20">
+              {/* Details */}
+              <div className="space-y-4 bg-red-50/50 p-4 rounded-lg border border-red-200/50">
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-[#7d3431]">Milestone Title</p>
-                  <p className="text-base font-bold text-black mt-0.5">{viewingEntry.title}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Title</p>
+                  <p className="text-base font-semibold text-gray-800 mt-1">{viewingEntry.title}</p>
                 </div>
+
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-[#7d3431]">Full Description</p>
-                  <p className="text-sm text-black/80 mt-0.5 leading-relaxed">{viewingEntry.description}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Description</p>
+                  <p className="text-sm text-gray-700 mt-1 leading-relaxed">{viewingEntry.description}</p>
                 </div>
-                <div className="grid grid-cols-2 gap-4 pt-1">
+
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-[#7d3431]">Category</p>
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border mt-1.5 ${getCategoryColor(viewingEntry.category)}`}>
-                      {React.createElement(getCategoryIcon(viewingEntry.category), { className: 'w-3 h-3 flex-shrink-0' })}
+                    <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Category</p>
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium mt-1.5 ${getCategoryColor(viewingEntry.category)}`}>
+                      {React.createElement(getCategoryIcon(viewingEntry.category), { className: 'w-3.5 h-3.5' })}
                       {getCategoryLabel(viewingEntry.category)}
                     </span>
                   </div>
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-[#7d3431]">Duration</p>
-                    <p className="text-sm font-semibold text-black mt-1.5">
+                    <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Duration</p>
+                    <p className="text-sm font-medium text-gray-700 mt-1.5">
                       {getDuration(viewingEntry)} {getDuration(viewingEntry) === 1 ? 'year' : 'years'}
                     </p>
                   </div>
                 </div>
+
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-[#7d3431]">Active Timelines</p>
-                  <p className="text-sm font-semibold text-black mt-0.5">{formatDateRange(viewingEntry)}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Date Range</p>
+                  <p className="text-sm font-medium text-gray-700 mt-1">{formatDateRange(viewingEntry)}</p>
                 </div>
               </div>
 
+              {/* Close Button */}
               <button
                 onClick={() => {
                   setIsViewModalOpen(false);
                   setViewingEntry(null);
                 }}
-                className="w-full py-2.5 bg-gradient-to-r from-[#7d3431] to-[#cb8c89] text-white rounded-lg font-bold hover:shadow-lg hover:shadow-[#7d3431]/30 hover:brightness-110 transition-all duration-300"
+                className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all duration-300"
               >
-                Close View
+                Close
               </button>
             </div>
           </div>

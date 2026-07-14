@@ -1,7 +1,6 @@
-// app/festival/page.js
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   PartyPopper, 
   Eye, 
@@ -14,9 +13,9 @@ import {
   ChevronRight,
   Search,
   Calendar,
-  Image,
+  Image as ImageIcon,
   Images,
-  CheckCircle
+  AlertCircle
 } from 'lucide-react';
 
 export default function FestivalPage() {
@@ -103,18 +102,23 @@ export default function FestivalPage() {
   const itemsPerPage = 5;
 
   // Form state
-  const [image, setImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [galleryImages, setGalleryImages] = useState([]);
+  const [galleryFiles, setGalleryFiles] = useState([]);
   const [galleryPreviews, setGalleryPreviews] = useState([]);
   const [date, setDate] = useState('');
+  const [formError, setFormError] = useState('');
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [viewingFestival, setViewingFestival] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const fileInputRef = useRef(null);
+  const galleryInputRef = useRef(null);
 
   // Filter festivals based on search
   const filteredFestivals = festivals.filter(festival =>
@@ -128,9 +132,23 @@ export default function FestivalPage() {
   const currentFestivals = filteredFestivals.slice(indexOfFirstItem, indexOfLastItem);
 
   // Reset to page 1 when search changes
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
+
+  // Clean up object URLs on unmount
+  useEffect(() => {
+    return () => {
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+      galleryPreviews.forEach(url => {
+        if (url.startsWith('blob:')) {
+          URL.revokeObjectURL(url);
+        }
+      });
+    };
+  }, [previewUrl, galleryPreviews]);
 
   const handlePageChange = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
@@ -140,73 +158,111 @@ export default function FestivalPage() {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    e.target.value = '';
 
-    if (!file) return;
+    if (!file) {
+      e.target.value = '';
+      return;
+    }
 
     if (!file.type.startsWith('image/')) {
-      alert('Please upload a valid image file (JPEG, PNG, GIF, WEBP).');
+      setFormError('Please upload a valid image file (JPEG, PNG, GIF, WEBP).');
+      e.target.value = '';
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      alert('Image size must be less than 5MB.');
+      setFormError('Image size must be less than 5MB.');
+      e.target.value = '';
       return;
     }
 
-    if (previewUrl && !previewUrl.startsWith('http')) {
+    setFormError('');
+
+    if (previewUrl && previewUrl.startsWith('blob:')) {
       URL.revokeObjectURL(previewUrl);
     }
 
-    setImage(file);
+    setImageFile(file);
     setPreviewUrl(URL.createObjectURL(file));
+    e.target.value = '';
   };
 
   const handleGalleryChange = (e) => {
     const files = Array.from(e.target.files);
-    e.target.value = '';
 
-    if (!files.length) return;
+    if (!files.length) {
+      e.target.value = '';
+      return;
+    }
 
-    // Validate each file
-    const validFiles = files.filter(file => {
+    const validFiles = [];
+    const invalidFiles = [];
+
+    files.forEach(file => {
       if (!file.type.startsWith('image/')) {
-        alert(`${file.name} is not a valid image file.`);
-        return false;
+        invalidFiles.push(file.name);
+      } else if (file.size > 5 * 1024 * 1024) {
+        invalidFiles.push(`${file.name} (size > 5MB)`);
+      } else {
+        validFiles.push(file);
       }
-      if (file.size > 5 * 1024 * 1024) {
-        alert(`${file.name} is larger than 5MB.`);
-        return false;
-      }
-      return true;
     });
 
-    if (!validFiles.length) return;
+    if (invalidFiles.length > 0) {
+      setFormError(`Invalid files: ${invalidFiles.join(', ')}`);
+      e.target.value = '';
+      return;
+    }
+
+    setFormError('');
 
     const newPreviews = validFiles.map(file => URL.createObjectURL(file));
-    setGalleryImages([...galleryImages, ...validFiles]);
+    setGalleryFiles([...galleryFiles, ...validFiles]);
     setGalleryPreviews([...galleryPreviews, ...newPreviews]);
+    e.target.value = '';
   };
 
   const removeGalleryImage = (index) => {
-    if (galleryPreviews[index] && !galleryPreviews[index].startsWith('http')) {
+    if (galleryPreviews[index] && galleryPreviews[index].startsWith('blob:')) {
       URL.revokeObjectURL(galleryPreviews[index]);
     }
-    const newImages = [...galleryImages];
+    const newFiles = [...galleryFiles];
     const newPreviews = [...galleryPreviews];
-    newImages.splice(index, 1);
+    newFiles.splice(index, 1);
     newPreviews.splice(index, 1);
-    setGalleryImages(newImages);
+    setGalleryFiles(newFiles);
     setGalleryPreviews(newPreviews);
+  };
+
+  const validateForm = () => {
+    if (!previewUrl) {
+      setFormError('Please select a main image.');
+      return false;
+    }
+    if (!title.trim()) {
+      setFormError('Please enter a title.');
+      return false;
+    }
+    if (!description.trim()) {
+      setFormError('Please enter a description.');
+      return false;
+    }
+    if (!date) {
+      setFormError('Please select a date.');
+      return false;
+    }
+    if (galleryPreviews.length === 0) {
+      setFormError('Please add at least one gallery image.');
+      return false;
+    }
+    return true;
   };
 
   const handleCreateFestival = (e) => {
     e.preventDefault();
-    if (!previewUrl) return alert('Please select a main image.');
-    if (!title.trim()) return alert('Please enter a title.');
-    if (!description.trim()) return alert('Please enter a description.');
-    if (!date) return alert('Please select a date.');
-    if (!galleryPreviews.length) return alert('Please add at least one gallery image.');
+    setFormError('');
+
+    if (!validateForm()) return;
 
     const newFestival = {
       id: Date.now(),
@@ -220,7 +276,7 @@ export default function FestivalPage() {
 
     setFestivals([newFestival, ...festivals]);
     setCurrentPage(1);
-    resetForm();
+    resetForm(true); // pass true to bypass URL revocation of newly active images
     setIsModalOpen(false);
   };
 
@@ -230,18 +286,17 @@ export default function FestivalPage() {
     setTitle(festival.title);
     setDescription(festival.description);
     setGalleryPreviews([...festival.galleryImages]);
-    setGalleryImages([]); // Reset files as we're editing
+    setGalleryFiles([]);
     setDate(festival.date);
+    setFormError('');
     setIsModalOpen(true);
   };
 
   const handleUpdateFestival = (e) => {
     e.preventDefault();
-    if (!previewUrl) return alert('Please select a main image.');
-    if (!title.trim()) return alert('Please enter a title.');
-    if (!description.trim()) return alert('Please enter a description.');
-    if (!date) return alert('Please select a date.');
-    if (!galleryPreviews.length) return alert('Please add at least one gallery image.');
+    setFormError('');
+
+    if (!validateForm()) return;
 
     const updatedFestivals = festivals.map(festival =>
       festival.id === editingId
@@ -257,27 +312,30 @@ export default function FestivalPage() {
     );
 
     setFestivals(updatedFestivals);
-    resetForm();
+    resetForm(true); // pass true to bypass URL revocation of newly active images
     setIsModalOpen(false);
     setEditingId(null);
   };
 
   const handleDelete = (id) => {
-    if (confirm('Are you sure you want to delete this festival entry?')) {
-      // Clean up gallery preview URLs
-      const festival = festivals.find(f => f.id === id);
-      if (festival) {
-        festival.galleryImages.forEach(url => {
-          if (!url.startsWith('http')) URL.revokeObjectURL(url);
-        });
-      }
-      
-      const updatedFestivals = festivals.filter(festival => festival.id !== id);
-      setFestivals(updatedFestivals);
-      const newTotalPages = Math.ceil(updatedFestivals.length / itemsPerPage);
-      if (currentPage > newTotalPages && newTotalPages > 0) {
-        setCurrentPage(newTotalPages);
-      }
+    if (window.confirm('Are you sure you want to delete this festival entry?')) {
+      setIsDeleting(true);
+      setTimeout(() => {
+        const festival = festivals.find(f => f.id === id);
+        if (festival) {
+          festival.galleryImages.forEach(url => {
+            if (url.startsWith('blob:')) URL.revokeObjectURL(url);
+          });
+        }
+        
+        const updatedFestivals = festivals.filter(festival => festival.id !== id);
+        setFestivals(updatedFestivals);
+        const newTotalPages = Math.ceil(updatedFestivals.length / itemsPerPage);
+        if (currentPage > newTotalPages && newTotalPages > 0) {
+          setCurrentPage(newTotalPages);
+        }
+        setIsDeleting(false);
+      }, 300);
     }
   };
 
@@ -286,40 +344,49 @@ export default function FestivalPage() {
     setIsViewModalOpen(true);
   };
 
-  const resetForm = () => {
-    if (previewUrl && !previewUrl.startsWith('http')) {
-      URL.revokeObjectURL(previewUrl);
+  const resetForm = (isSubmitting = false) => {
+    // If we're submitting, we do NOT want to revoke object URLs 
+    // because those URLs are now assigned to active state items rendering in the list!
+    if (!isSubmitting) {
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+      galleryPreviews.forEach(url => {
+        if (url.startsWith('blob:')) URL.revokeObjectURL(url);
+      });
     }
-    galleryPreviews.forEach(url => {
-      if (!url.startsWith('http')) URL.revokeObjectURL(url);
-    });
-    setImage(null);
+
+    setImageFile(null);
     setPreviewUrl('');
     setTitle('');
     setDescription('');
-    setGalleryImages([]);
+    setGalleryFiles([]);
     setGalleryPreviews([]);
     setDate('');
     setEditingId(null);
+    setFormError('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    if (galleryInputRef.current) {
+      galleryInputRef.current.value = '';
+    }
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    resetForm();
+    resetForm(false);
   };
 
-  // Truncate helper
-  const truncateText = (text, maxLength = 60) => {
+  const truncateText = (text, maxLength = 40) => {
     if (!text) return '';
     if (text.length <= maxLength) return text;
     return text.slice(0, maxLength) + '…';
   };
 
-  // Format date
   const formatDate = (dateString) => {
     if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('en-US', { 
-      weekday: 'short',
       year: 'numeric', 
       month: 'short', 
       day: 'numeric' 
@@ -327,309 +394,382 @@ export default function FestivalPage() {
   };
 
   return (
-    <div className="space-y-5 max-w-7xl mx-auto px-1">
-      
-  
-      {/* Table */}
-      <div className="bg-white rounded-xl mt-4 border border-red-200/50 shadow-sm overflow-hidden flex flex-col justify-between">
-        {/* Table Header with Search */}
-             <div className="flex justify-end w-full">
-             <div className="flex flex-col sm:flex-row p-4 items-stretch sm:items-center gap-3 max-w-xl w-full sm:w-auto">
-               <div className="relative sm:w-80">
-                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black/40" />
-                 <input
-                   type="text"
-                   placeholder="Search festivals..."
-                   className="w-full pl-10 pr-4 py-2 text-black border  border-red-200 rounded-lg"
-                 />
-               </div>
-           
-               <button
-                 onClick={() => setIsModalOpen(true)}
-                 className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-xl whitespace-nowrap"
-               >
-                 <Plus className="w-4 h-4" />
-                 Add New Festival
-               </button>
-             </div>
-           </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-sm">
-            <thead>
-              <tr className="bg-gradient-to-r from-[#7d3431]/5 to-[#cb8c89]/5 border-b border-red-200 text-black font-bold uppercase text-xs tracking-wider">
-                <th className="px-6 py-3.5 w-[120px]">Image</th>
-                <th className="px-6 py-3.5">Title</th>
-                <th className="px-6 py-3.5">Description</th>
-                <th className="px-6 py-3.5 w-[140px]">Date</th>
-                <th className="px-6 py-3.5 w-[180px] text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-red-100">
-              {currentFestivals.length === 0 ? (
-                <tr>
-                  <td colSpan="5" className="text-center py-16 text-black/40">
-                    <PartyPopper className="w-10 h-10 mx-auto opacity-20 mb-2" />
-                    <p className="font-medium text-sm">No festivals found</p>
-                  </td>
-                </tr>
-              ) : (
-                currentFestivals.map((festival) => (
-                  <tr key={festival.id} className="hover:bg-[#7d3431]/5 transition-colors">
-                    <td className="px-6 py-3">
-                      <div className="w-16 h-16 rounded-lg bg-slate-100 overflow-hidden border border-red-200 shadow-sm">
-                        <img src={festival.imageUrl} alt={festival.title} className="w-full h-full object-cover" />
-                      </div>
-                    </td>
-
-                    <td className="px-6 py-3">
-                      <span className="font-semibold text-black block max-w-xs truncate">{festival.title}</span>
-                    </td>
-
-                    <td className="px-6 py-3">
-                      <span className="text-black/70 block max-w-sm">
-                        {truncateText(festival.description, 40)}
-                      </span>
-                    </td>
-
-                    <td className="px-6 py-3 text-black/70 font-medium whitespace-nowrap text-xs">
-                      {formatDate(festival.date)}
-                    </td>
-
-                    <td className="px-6 py-3 text-right">
-                      <div className="flex justify-end gap-1.5">
-                        <button 
-                          onClick={() => handleView(festival)}
-                          title="View" 
-                          className="p-2 text-black/50 rounded-lg hover:text-[#7d3431] hover:bg-[#7d3431]/10 transition-all duration-200"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleEdit(festival)}
-                          title="Edit" 
-                          className="p-2 text-black/50 rounded-lg hover:text-[#a55d5b] hover:bg-[#a55d5b]/10 transition-all duration-200"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(festival.id)}
-                          title="Delete" 
-                          className="p-2 text-black/50 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        {filteredFestivals.length > 0 && (
-          <div className="px-6 py-3.5 border-t border-red-100 flex flex-col sm:flex-row justify-between items-center gap-4 bg-[#7d3431]/5">
-            <span className="font-medium text-black/70 text-sm">
-              Showing <span className="text-black font-semibold">{indexOfFirstItem + 1}</span> to{' '}
-              <span className="text-black font-semibold">
-                {Math.min(indexOfLastItem, filteredFestivals.length)}
-              </span>{' '}
-              of <span className="text-black font-semibold">{filteredFestivals.length}</span> entries
-            </span>
-
-            <div className="flex items-center gap-1.5">
+    <div className="min-h-screen w-full flex items-start justify-center p-3 md:p-6">
+      <div className="w-full max-w-7xl bg-slate-900 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20">
+        {/* Table */}
+        <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 shadow-xl overflow-hidden flex flex-col justify-between">
+          {/* Table Header with Search */}
+          <div className="flex justify-between items-center p-4 border-b border-red-200/50">
+            <div className="flex items-center gap-3">
+              <PartyPopper className="w-5 h-5 text-red-600" />
+              <span className="font-semibold text-gray-800">Festivals</span>
+              <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-medium">
+                {filteredFestivals.length}
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search festivals..."
+                  className="w-48 md:w-64 pl-9 pr-4 py-2 text-sm text-gray-800 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 bg-white/80"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
               <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="p-1.5 rounded-lg border border-red-200 bg-white text-black/60 hover:bg-[#7d3431]/10 hover:border-[#7d3431] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+                onClick={() => {
+                  resetForm(false);
+                  setIsModalOpen(true);
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-all duration-300 whitespace-nowrap"
               >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-
-              {Array.from({ length: totalPages }, (_, index) => {
-                const pageNum = index + 1;
-                const isSelected = currentPage === pageNum;
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => handlePageChange(pageNum)}
-                    className={`w-8 h-8 rounded-lg text-xs font-bold transition-all duration-200 ${
-                      isSelected
-                        ? 'bg-gradient-to-r from-[#7d3431] to-[#cb8c89] text-white shadow-md shadow-[#7d3431]/20'
-                        : 'bg-white border border-red-200 text-black hover:bg-[#7d3431]/10 hover:border-[#7d3431]'
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
-
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="p-1.5 rounded-lg border border-red-200 bg-white text-black/60 hover:bg-[#7d3431]/10 hover:border-[#7d3431] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
-              >
-                <ChevronRight className="w-4 h-4" />
+                <Plus className="w-4 h-4" />
+                Add Festival
               </button>
             </div>
           </div>
-        )}
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-red-50/50 border-b border-red-200/50 text-gray-700 font-semibold uppercase text-xs tracking-wider">
+                  <th className="px-6 py-4 w-[100px]">Image</th>
+                  <th className="px-6 py-4 min-w-[150px]">Title</th>
+                  <th className="px-6 py-4 min-w-[200px]">Description</th>
+                  <th className="px-6 py-4 w-[140px] text-center">Date</th>
+                  <th className="px-6 py-4 w-[160px] text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-red-100/50">
+                {currentFestivals.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="text-center py-16">
+                      <PartyPopper className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                      <p className="font-medium text-gray-500 text-base">No festivals found</p>
+                      <p className="text-sm text-gray-400 mt-1">Try adjusting your search or add a new festival</p>
+                    </td>
+                  </tr>
+                ) : (
+                  currentFestivals.map((festival) => (
+                    <tr key={festival.id} className="hover:bg-red-50/30 transition-colors duration-150">
+                      <td className="px-6 py-4">
+                        <div className="w-14 h-14 rounded-lg overflow-hidden border border-red-200 shadow-sm">
+                          <img 
+                            src={festival.imageUrl} 
+                            alt={festival.title} 
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.src = 'https://via.placeholder.com/100x100/FF6B6B/FFFFFF?text=No+Image';
+                            }}
+                          />
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <span className="font-semibold text-gray-800 block text-base">{festival.title}</span>
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <span className="text-sm text-gray-600 block max-w-xs" title={festival.description}>
+                          {truncateText(festival.description, 40)}
+                        </span>
+                      </td>
+
+                      <td className="px-6 py-4 text-center">
+                        <span className="inline-flex items-center gap-1.5 text-gray-700 bg-red-50/80 px-3 py-1.5 rounded-full border border-red-200/50 text-sm font-medium">
+                          <Calendar className="w-3.5 h-3.5 text-red-600" />
+                          {formatDate(festival.date)}
+                        </span>
+                      </td>
+
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex justify-end gap-2">
+                          <button 
+                            onClick={() => handleView(festival)}
+                            title="View" 
+                            className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                          >
+                            <Eye className="w-4.5 h-4.5" />
+                          </button>
+                          <button 
+                            onClick={() => handleEdit(festival)}
+                            title="Edit" 
+                            className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                          >
+                            <Edit2 className="w-4.5 h-4.5" />
+                          </button>
+                          <button 
+                            onClick={() => handleDelete(festival.id)}
+                            disabled={isDeleting}
+                            title="Delete" 
+                            className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200 disabled:opacity-50"
+                          >
+                            <Trash2 className="w-4.5 h-4.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          {filteredFestivals.length > 0 && (
+            <div className="px-6 py-4 border-t border-red-200/50 flex flex-col sm:flex-row justify-between items-center gap-4 bg-red-50/30">
+              <span className="font-medium text-gray-600 text-sm">
+                Showing <span className="text-gray-800 font-bold">{indexOfFirstItem + 1}</span> to{' '}
+                <span className="text-gray-800 font-bold">
+                  {Math.min(indexOfLastItem, filteredFestivals.length)}
+                </span>{' '}
+                of <span className="text-gray-800 font-bold">{filteredFestivals.length}</span> festivals
+              </span>
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="p-2 rounded-lg border border-red-200/50 bg-white text-gray-600 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+
+                {Array.from({ length: Math.min(totalPages, 5) }, (_, index) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = index + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = index + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + index;
+                  } else {
+                    pageNum = currentPage - 2 + index;
+                  }
+                  
+                  const isSelected = currentPage === pageNum;
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`w-9 h-9 rounded-lg text-sm font-bold transition-all duration-200 ${
+                        isSelected
+                          ? 'bg-red-600 text-white shadow-md'
+                          : 'bg-white border border-red-200/50 text-gray-700 hover:bg-red-50 hover:border-red-300'
+                      }`}
+                      aria-label={`Go to page ${pageNum}`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="p-2 rounded-lg border border-red-200/50 bg-white text-gray-600 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+                  aria-label="Next page"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Add/Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={closeModal}>
-          <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl border border-red-200 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-xl w-full max-w-2xl p-6 shadow-xl border border-red-200 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-black">
-                {editingId ? 'Edit Festival' : 'Add New Festival'}
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                {editingId ? (
+                  <>
+                    <Edit2 className="w-5 h-5 text-red-600" />
+                    Edit Festival
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-5 h-5 text-red-600" />
+                    Add New Festival
+                  </>
+                )}
               </h3>
               <button 
                 onClick={closeModal} 
-                className="p-2 rounded-lg text-black/40 hover:bg-[#7d3431]/10 hover:text-[#7d3431] transition-all duration-200"
+                className="p-2 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={editingId ? handleUpdateFestival : handleCreateFestival} className="space-y-4 text-sm">
-              {/* Main Image */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-black mb-1.5">
-                  Main Image *
-                </label>
-                {previewUrl ? (
-                  <div className="relative w-full h-40 rounded-lg overflow-hidden border-2 border-[#7d3431]/20">
-                    <img 
-                      key={previewUrl} 
-                      src={previewUrl} 
-                      alt="Preview" 
-                      className="w-full h-full object-cover" 
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (previewUrl && !previewUrl.startsWith('http')) {
-                          URL.revokeObjectURL(previewUrl);
-                        }
-                        setPreviewUrl('');
-                        setImage(null);
-                      }}
-                      className="absolute top-2 right-2 p-1.5 bg-gradient-to-r from-[#7d3431] to-[#cb8c89] text-white rounded-full shadow-lg hover:shadow-[#7d3431]/30 transition-all"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                ) : (
-                  <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-[#7d3431]/30 rounded-lg cursor-pointer hover:bg-[#7d3431]/5 transition-all duration-200 hover:border-[#7d3431]">
-                    <Upload className="w-8 h-8 text-[#7d3431]/50 mb-2" />
-                    <span className="text-sm font-medium text-black">Upload main image</span>
-                    <span className="text-xs text-black/50 mt-1">PNG, JPG, GIF up to 5MB</span>
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      className="hidden" 
-                      onChange={handleImageChange} 
-                    />
-                  </label>
-                )}
+            {formError && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2 text-red-700 text-sm">
+                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <span>{formError}</span>
               </div>
+            )}
 
-              {/* Gallery Images */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-black mb-1.5">
-                  Gallery Images * (Min 1)
-                </label>
-                {galleryPreviews.length > 0 && (
-                  <div className="grid grid-cols-3 gap-2 mb-3">
-                    {galleryPreviews.map((url, index) => (
-                      <div key={index} className="relative w-full h-20 rounded-lg overflow-hidden border border-[#7d3431]/20">
+            <form onSubmit={editingId ? handleUpdateFestival : handleCreateFestival} className="space-y-4 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Left Column */}
+                <div className="space-y-4">
+                  {/* Main Image */}
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                      Main Image *
+                    </label>
+                    {previewUrl ? (
+                      <div className="relative w-full h-48 rounded-lg overflow-hidden border-2 border-red-200 shadow-sm group">
                         <img 
-                          src={url} 
-                          alt={`Gallery ${index + 1}`} 
+                          key={previewUrl}
+                          src={previewUrl} 
+                          alt="Preview" 
                           className="w-full h-full object-cover" 
                         />
                         <button
                           type="button"
-                          onClick={() => removeGalleryImage(index)}
-                          className="absolute top-1 right-1 p-0.5 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-all"
+                          onClick={() => {
+                            if (previewUrl && previewUrl.startsWith('blob:')) {
+                              URL.revokeObjectURL(previewUrl);
+                            }
+                            setPreviewUrl('');
+                            setImageFile(null);
+                            if (fileInputRef.current) {
+                              fileInputRef.current.value = '';
+                            }
+                          }}
+                          className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded-full shadow-lg hover:bg-red-700 transition-all"
                         >
-                          <X className="w-3 h-3" />
+                          <X className="w-4 h-4" />
                         </button>
                       </div>
-                    ))}
+                    ) : (
+                      <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-red-300 rounded-lg cursor-pointer hover:bg-red-50 transition-all duration-200 hover:border-red-500">
+                        <Upload className="w-10 h-10 text-red-400 mb-2" />
+                        <span className="text-sm font-medium text-gray-700">Upload main image</span>
+                        <span className="text-xs text-gray-400 mt-1">PNG, JPG, GIF up to 5MB</span>
+                        <input 
+                          ref={fileInputRef}
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={handleImageChange} 
+                        />
+                      </label>
+                    )}
                   </div>
-                )}
-                <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-[#7d3431]/30 rounded-lg cursor-pointer hover:bg-[#7d3431]/5 transition-all duration-200 hover:border-[#7d3431]">
-                  <Images className="w-6 h-6 text-[#7d3431]/50 mb-1" />
-                  <span className="text-xs font-medium text-black">Upload gallery images</span>
-                  <span className="text-[10px] text-black/50 mt-0.5">PNG, JPG, GIF up to 5MB each</span>
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    multiple
-                    className="hidden" 
-                    onChange={handleGalleryChange} 
-                  />
-                </label>
+
+                  {/* Gallery Images */}
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                      Gallery Images * (Min 1)
+                    </label>
+                    {galleryPreviews.length > 0 && (
+                      <div className="grid grid-cols-3 gap-2 mb-3">
+                        {galleryPreviews.map((url, index) => (
+                          <div key={index} className="relative w-full h-20 rounded-lg overflow-hidden border border-red-200">
+                            <img 
+                              src={url} 
+                              alt={`Gallery ${index + 1}`} 
+                              className="w-full h-full object-cover" 
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeGalleryImage(index)}
+                              className="absolute top-1 right-1 p-0.5 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-all"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-red-300 rounded-lg cursor-pointer hover:bg-red-50 transition-all duration-200 hover:border-red-500">
+                      <Images className="w-6 h-6 text-red-400 mb-1" />
+                      <span className="text-xs font-medium text-gray-700">Upload gallery images</span>
+                      <span className="text-[10px] text-gray-400 mt-0.5">PNG, JPG, GIF up to 5MB each</span>
+                      <input 
+                        ref={galleryInputRef}
+                        type="file" 
+                        accept="image/*" 
+                        multiple
+                        className="hidden" 
+                        onChange={handleGalleryChange} 
+                      />
+                    </label>
+                    <p className="text-xs text-gray-400 mt-1">
+                      {galleryPreviews.length} image{galleryPreviews.length !== 1 ? 's' : ''} uploaded
+                    </p>
+                  </div>
+                </div>
+
+                {/* Right Column */}
+                <div className="space-y-4">
+                  {/* Title */}
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                      Title *
+                    </label>
+                    <input 
+                      type="text" 
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder="e.g. Diwali Celebration 2025"
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
+                      maxLength={100}
+                    />
+                    <div className="text-xs text-gray-400 mt-1 text-right">
+                      {title.length}/100
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                      Description *
+                    </label>
+                    <textarea 
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Describe the festival celebration..."
+                      rows="3"
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all resize-none"
+                    />
+                  </div>
+
+                  {/* Date */}
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                      Date *
+                    </label>
+                    <input 
+                      type="date" 
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
+                    />
+                  </div>
+                </div>
               </div>
 
-              {/* Title */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-black mb-1.5">
-                  Title *
-                </label>
-                <input 
-                  type="text" 
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Diwali Celebration 2025"
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#7d3431]/20 text-sm text-black focus:outline-none focus:border-[#7d3431] focus:ring-2 focus:ring-[#7d3431]/20 transition-all"
-                />
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-black mb-1.5">
-                  Description *
-                </label>
-                <textarea 
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe the festival celebration..."
-                  rows="3"
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#7d3431]/20 text-sm text-black focus:outline-none focus:border-[#7d3431] focus:ring-2 focus:ring-[#7d3431]/20 transition-all resize-none"
-                />
-              </div>
-
-              {/* Date */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-black mb-1.5">
-                  Date *
-                </label>
-                <input 
-                  type="date" 
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#7d3431]/20 text-sm text-black focus:outline-none focus:border-[#7d3431] focus:ring-2 focus:ring-[#7d3431]/20 transition-all"
-                />
-              </div>
-
-              <div className="flex gap-2.5 pt-2">
+              <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="flex-1 py-2.5 border border-[#7d3431]/20 rounded-lg font-semibold text-black/70 hover:bg-[#7d3431]/5 transition-all duration-200"
+                  className="flex-1 py-2.5 border border-gray-200 rounded-lg font-semibold text-gray-600 hover:bg-gray-50 transition-all duration-200"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 bg-gradient-to-r from-[#7d3431] to-[#cb8c89] text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-[#7d3431]/20 transition-all duration-300"
+                  className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all duration-300"
                 >
-                  {editingId ? 'Update' : 'Save Changes'}
+                  {editingId ? 'Update Festival' : 'Save Festival'}
                 </button>
               </div>
             </form>
@@ -643,97 +783,58 @@ export default function FestivalPage() {
           setIsViewModalOpen(false);
           setViewingFestival(null);
         }}>
-          <div className="bg-white rounded-xl w-full max-w-lg p-6 shadow-xl border border-red-200 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-black">Festival Details</h3>
+          <div className="bg-white rounded-xl w-full max-w-2xl p-6 shadow-xl border border-red-200 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <PartyPopper className="w-5 h-5 text-red-600" />
+                Festival Details
+              </h3>
               <button 
                 onClick={() => {
                   setIsViewModalOpen(false);
                   setViewingFestival(null);
                 }}
-                className="p-2 rounded-lg text-black/40 hover:bg-[#7d3431]/10 hover:text-[#7d3431] transition-all duration-200"
+                className="p-2 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-
-            <div className="space-y-5">
-              {/* Main Image */}
-              <div className="w-full h-48 rounded-lg overflow-hidden border-2 border-[#7d3431]/20">
+            
+            <div className="space-y-6">
+              <div className="relative w-full h-64 rounded-xl overflow-hidden border border-red-100 shadow-md">
                 <img 
                   src={viewingFestival.imageUrl} 
                   alt={viewingFestival.title} 
-                  className="w-full h-full object-cover" 
+                  className="w-full h-full object-cover"
                 />
               </div>
 
-              {/* Gallery Images */}
-              {viewingFestival.galleryImages && viewingFestival.galleryImages.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Images className="w-3.5 h-3.5 text-[#7d3431]/60" />
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-black/50">Gallery</p>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {viewingFestival.galleryImages.map((url, index) => (
-                      <div key={index} className="w-full h-20 rounded-lg overflow-hidden border border-[#7d3431]/20">
-                        <img 
-                          src={url} 
-                          alt={`Gallery ${index + 1}`} 
-                          className="w-full h-full object-cover" 
-                        />
-                      </div>
-                    ))}
-                  </div>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-sm text-red-600 font-medium bg-red-50 w-fit px-3 py-1 rounded-full border border-red-100">
+                  <Calendar className="w-4 h-4" />
+                  {formatDate(viewingFestival.date)}
                 </div>
-              )}
-
-              {/* Details Grid */}
-              <div className="grid grid-cols-2 gap-4">
-                {/* Title - Full width */}
-                <div className="col-span-2">
-                  <div className="flex items-center gap-2 mb-1">
-                    <PartyPopper className="w-3.5 h-3.5 text-[#7d3431]/60" />
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-black/50">Title</p>
-                  </div>
-                  <p className="text-sm font-semibold text-black bg-[#7d3431]/5 px-3 py-2 rounded-lg border border-red-200/50">
-                    {viewingFestival.title}
-                  </p>
-                </div>
-
-                {/* Description - Full width */}
-                <div className="col-span-2">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Image className="w-3.5 h-3.5 text-[#7d3431]/60" />
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-black/50">Description</p>
-                  </div>
-                  <p className="text-sm text-black/70 bg-[#7d3431]/5 px-3 py-2 rounded-lg border border-red-200/50 min-h-[60px]">
-                    {viewingFestival.description}
-                  </p>
-                </div>
-
-                {/* Date */}
-                <div className="col-span-2">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Calendar className="w-3.5 h-3.5 text-[#7d3431]/60" />
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-black/50">Date</p>
-                  </div>
-                  <p className="text-sm font-medium text-black/80 bg-[#7d3431]/5 px-3 py-2 rounded-lg border border-red-200/50">
-                    {formatDate(viewingFestival.date)}
-                  </p>
-                </div>
+                <h4 className="text-2xl font-bold text-gray-900">{viewingFestival.title}</h4>
+                <p className="text-gray-600 leading-relaxed text-sm">{viewingFestival.description}</p>
               </div>
 
-              {/* Close Button */}
-              <button
-                onClick={() => {
-                  setIsViewModalOpen(false);
-                  setViewingFestival(null);
-                }}
-                className="w-full py-2.5 bg-gradient-to-r from-[#7d3431] to-[#cb8c89] text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-[#7d3431]/20 transition-all duration-300"
-              >
-                Close
-              </button>
+              <div>
+                <h5 className="text-xs font-bold uppercase tracking-wider text-gray-700 mb-3 flex items-center gap-1.5">
+                  <Images className="w-4 h-4 text-red-500" />
+                  Event Gallery
+                </h5>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {viewingFestival.galleryImages.map((image, index) => (
+                    <div key={index} className="aspect-video rounded-lg overflow-hidden border border-gray-100 shadow-sm hover:scale-[1.02] transition-transform duration-200">
+                      <img 
+                        src={image} 
+                        alt={`${viewingFestival.title} Gallery ${index + 1}`} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Image as ImageIcon, 
   Eye, 
@@ -11,7 +11,8 @@ import {
   X, 
   ChevronLeft, 
   ChevronRight,
-  Search
+  Search,
+  AlertCircle
 } from 'lucide-react';
 
 export default function BannerPage() {
@@ -28,13 +29,19 @@ export default function BannerPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const itemsPerPage = 5;
 
+  // Form state
   const [title, setTitle] = useState('');
-  const [image, setImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
+  const [formError, setFormError] = useState('');
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [viewingBanner, setViewingBanner] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const fileInputRef = useRef(null);
 
   // Filter banners based on search
   const filteredBanners = banners.filter(banner =>
@@ -51,6 +58,15 @@ export default function BannerPage() {
     setCurrentPage(1);
   }, [searchTerm]);
 
+  // Clean up object URLs on unmount
+  useEffect(() => {
+    return () => {
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
   const handlePageChange = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
@@ -59,15 +75,43 @@ export default function BannerPage() {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-      setPreviewUrl(URL.createObjectURL(file));
+    e.target.value = '';
+
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setFormError('Please upload a valid image file (JPEG, PNG, GIF, WEBP).');
+      return;
     }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setFormError('Image size must be less than 5MB.');
+      return;
+    }
+
+    setFormError('');
+
+    if (previewUrl && previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl);
+    }
+
+    setImageFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  };
+
+  const validateForm = () => {
+    if (!previewUrl) {
+      setFormError('Please select an image.');
+      return false;
+    }
+    return true;
   };
 
   const handleCreateBanner = (e) => {
     e.preventDefault();
-    if (!previewUrl) return alert('Please select an image.');
+    setFormError('');
+
+    if (!validateForm()) return;
 
     const newBanner = {
       id: Date.now(),
@@ -78,9 +122,7 @@ export default function BannerPage() {
 
     setBanners([newBanner, ...banners]);
     setCurrentPage(1);
-    setTitle('');
-    setImage(null);
-    setPreviewUrl('');
+    resetForm();
     setIsModalOpen(false);
   };
 
@@ -88,35 +130,45 @@ export default function BannerPage() {
     setEditingId(banner.id);
     setTitle(banner.title);
     setPreviewUrl(banner.imageUrl);
+    setImageFile(null);
+    setFormError('');
     setIsModalOpen(true);
   };
 
   const handleUpdateBanner = (e) => {
     e.preventDefault();
-    if (!previewUrl) return alert('Please select an image.');
+    setFormError('');
+
+    if (!validateForm()) return;
 
     const updatedBanners = banners.map(banner =>
       banner.id === editingId
-        ? { ...banner, title: title.trim(), imageUrl: previewUrl }
+        ? { 
+            ...banner, 
+            title: title.trim(), 
+            imageUrl: previewUrl 
+          }
         : banner
     );
 
     setBanners(updatedBanners);
-    setTitle('');
-    setImage(null);
-    setPreviewUrl('');
+    resetForm();
     setIsModalOpen(false);
     setEditingId(null);
   };
 
   const handleDelete = (id) => {
-    if (confirm('Are you sure you want to delete this banner?')) {
-      const updatedBanners = banners.filter(banner => banner.id !== id);
-      setBanners(updatedBanners);
-      const newTotalPages = Math.ceil(updatedBanners.length / itemsPerPage);
-      if (currentPage > newTotalPages && newTotalPages > 0) {
-        setCurrentPage(newTotalPages);
-      }
+    if (window.confirm('Are you sure you want to delete this banner? This action cannot be undone.')) {
+      setIsDeleting(true);
+      setTimeout(() => {
+        const updatedBanners = banners.filter(banner => banner.id !== id);
+        setBanners(updatedBanners);
+        const newTotalPages = Math.ceil(updatedBanners.length / itemsPerPage);
+        if (currentPage > newTotalPages && newTotalPages > 0) {
+          setCurrentPage(newTotalPages);
+        }
+        setIsDeleting(false);
+      }, 300);
     }
   };
 
@@ -125,169 +177,207 @@ export default function BannerPage() {
     setIsViewModalOpen(true);
   };
 
+  const resetForm = () => {
+    if (previewUrl && previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setImageFile(null);
+    setPreviewUrl('');
+    setTitle('');
+    setEditingId(null);
+    setFormError('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const closeModal = () => {
     setIsModalOpen(false);
-    setTitle('');
-    setImage(null);
-    setPreviewUrl('');
-    setEditingId(null);
+    resetForm();
   };
 
   return (
-    <div className="space-y-5 max-w-7xl mx-auto bg-red-50/40 py-6 px-6 min-h-screen transition-all">
-      
-      {/* Table Card wrapper */}
-      <div className="bg-white rounded-xl border border-red-200/60 shadow-sm overflow-hidden flex flex-col justify-between">
-        
-        {/* Table Header with Search and Add Button inline */}
-        <div className="p-4 border-b border-red-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white">
-          
-          {/* Left Side: Search Bar & Add Button Side-by-Side */}
-       <div className="flex justify-end w-full">
-  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 max-w-xl w-full sm:w-auto">
-    <div className="relative sm:w-80">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black/40" />
-      <input
-        type="text"
-        placeholder="Search banners..."
-        className="w-full pl-10 pr-4 py-2 text-black border  border-red-200 rounded-lg"
-      />
-    </div>
-
-    <button
-      onClick={() => setIsModalOpen(true)}
-      className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-xl whitespace-nowrap"
-    >
-      <Plus className="w-4 h-4" />
-      Add New Banner
-    </button>
-  </div>
-</div>
-            
-
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-sm">
-            <thead>
-              <tr className="bg-red-50/50 border-b border-red-200 text-red-600 font-extrabold uppercase text-xs tracking-wider">
-                <th className="px-6 py-3.5 w-[160px]">Banner Preview</th>
-                <th className="px-6 py-3.5 text-center">Banner Title</th>
-                <th className="px-6 py-3.5 w-[160px] text-center">Created Date</th>
-                <th className="px-6 py-3.5 w-[180px] text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-red-100">
-              {currentBanners.length === 0 ? (
-                <tr>
-                  <td colSpan="4" className="text-center py-16 text-black/40">
-                    <ImageIcon className="w-10 h-10 mx-auto opacity-20 mb-2 text-red-600" />
-                    <p className="font-medium text-sm">No banners found</p>
-                  </td>
-                </tr>
-              ) : (
-                currentBanners.map((banner) => (
-                  <tr key={banner.id} className="hover:bg-red-50/40 transition-colors">
-                    <td className="px-6 py-3">
-                      <div className="w-28 h-16 rounded-lg bg-white overflow-hidden border border-red-200 shadow-sm">
-                        <img src={banner.imageUrl} alt="Banner" className="w-full h-full object-cover" />
-                      </div>
-                    </td>
-                    
-                    <td className="px-6 py-3 text-center">
-                      {banner.title ? (
-                        <span className="font-bold text-black block">{banner.title}</span>
-                      ) : (
-                        <span className="text-xs italic text-black/50 bg-black/5 px-2.5 py-1 rounded-md border border-red-200">
-                          Untitled Banner
-                        </span>
-                      )}
-                    </td>
-
-                    <td className="px-6 py-3 text-black/70 font-semibold text-center">
-                      {banner.createdAt}
-                    </td>
-
-                    <td className="px-6 py-3 text-right">
-                      <div className="flex justify-end gap-1.5">
-                        <button 
-                          onClick={() => handleView(banner)}
-                          title="View" 
-                          className="p-2 text-black/40 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleEdit(banner)}
-                          title="Edit" 
-                          className="p-2 text-black/40 rounded-lg hover:text-red-500 hover:bg-red-50 transition-all duration-200"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(banner.id)}
-                          title="Delete" 
-                          className="p-2 text-black/40 rounded-lg hover:text-red-700 hover:bg-red-100 transition-all duration-200"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        {filteredBanners.length > 0 && (
-          <div className="px-6 py-3.5 border-t border-red-100 flex flex-col sm:flex-row justify-between items-center gap-4 bg-red-50/30">
-            <span className="font-medium text-black/70 text-sm">
-              Showing <span className="text-black font-semibold">{indexOfFirstItem + 1}</span> to{' '}
-              <span className="text-black font-semibold">
-                {indexOfLastItem > filteredBanners.length ? filteredBanners.length : indexOfLastItem}
-              </span>{' '}
-              of <span className="text-black font-semibold">{filteredBanners.length}</span> entries
-            </span>
-
-            <div className="flex items-center gap-1.5">
+    <div className="min-h-screen w-full  flex items-start justify-center p-3 md:p-6">
+      <div className="w-full max-w-7xl bg-slate-900 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20">
+        {/* Table */}
+        <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 shadow-xl overflow-hidden flex flex-col justify-between">
+          {/* Table Header with Search */}
+          <div className="flex justify-between items-center p-4 border-b border-red-200/50">
+            <div className="flex items-center gap-3">
+              <ImageIcon className="w-5 h-5 text-red-600" />
+              <span className="font-semibold text-gray-800">Banners</span>
+              <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-medium">
+                {filteredBanners.length}
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search banners..."
+                  className="w-48 md:w-64 pl-9 pr-4 py-2 text-sm text-gray-800 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 bg-white/80"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
               <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="p-1.5 rounded-lg border border-red-200 bg-white text-black/60 hover:bg-red-50 hover:border-red-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+                onClick={() => {
+                  resetForm();
+                  setIsModalOpen(true);
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-all duration-300 whitespace-nowrap"
               >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-
-              {Array.from({ length: totalPages }, (_, index) => {
-                const pageNum = index + 1;
-                const isSelected = currentPage === pageNum;
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => handlePageChange(pageNum)}
-                    className={`w-8 h-8 rounded-lg text-xs font-black transition-all duration-200 ${
-                      isSelected
-                        ? 'bg-gradient-to-r from-red-600 to-red-500 text-white shadow-md shadow-red-600/20'
-                        : 'bg-white border border-red-200 text-black hover:bg-red-50 hover:border-red-400'
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
-
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="p-1.5 rounded-lg border border-red-200 bg-white text-black/60 hover:bg-red-50 hover:border-red-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
-              >
-                <ChevronRight className="w-4 h-4" />
+                <Plus className="w-4 h-4" />
+                Add Banner
               </button>
             </div>
           </div>
-        )}
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-red-50/50 border-b border-red-200/50 text-gray-700 font-semibold uppercase text-xs tracking-wider">
+                  <th className="px-6 py-4 w-[160px]">Banner Preview</th>
+                  <th className="px-6 py-4 min-w-[150px]">Banner Title</th>
+                  <th className="px-6 py-4 w-[160px] text-center">Created Date</th>
+                  <th className="px-6 py-4 w-[160px] text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-red-100/50">
+                {currentBanners.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" className="text-center py-16">
+                      <ImageIcon className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                      <p className="font-medium text-gray-500 text-base">No banners found</p>
+                      <p className="text-sm text-gray-400 mt-1">Try adjusting your search or add a new banner</p>
+                    </td>
+                  </tr>
+                ) : (
+                  currentBanners.map((banner) => (
+                    <tr key={banner.id} className="hover:bg-red-50/30 transition-colors duration-150">
+                      <td className="px-6 py-4">
+                        <div className="w-28 h-16 rounded-lg overflow-hidden border border-red-200 shadow-sm">
+                          <img 
+                            src={banner.imageUrl} 
+                            alt={banner.title || 'Banner'} 
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.src = 'https://via.placeholder.com/200x100/FF6B6B/FFFFFF?text=No+Image';
+                            }}
+                          />
+                        </div>
+                      </td>
+                      
+                      <td className="px-6 py-4">
+                        {banner.title ? (
+                          <span className="font-semibold text-gray-800 block text-base">{banner.title}</span>
+                        ) : (
+                          <span className="text-xs italic text-gray-400 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200">
+                            Untitled Banner
+                          </span>
+                        )}
+                      </td>
+
+                      <td className="px-6 py-4 text-gray-600 font-medium text-center text-sm">
+                        {banner.createdAt}
+                      </td>
+
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex justify-end gap-2">
+                          <button 
+                            onClick={() => handleView(banner)}
+                            title="View" 
+                            className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                          >
+                            <Eye className="w-4.5 h-4.5" />
+                          </button>
+                          <button 
+                            onClick={() => handleEdit(banner)}
+                            title="Edit" 
+                            className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                          >
+                            <Edit2 className="w-4.5 h-4.5" />
+                          </button>
+                          <button 
+                            onClick={() => handleDelete(banner.id)}
+                            disabled={isDeleting}
+                            title="Delete" 
+                            className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200 disabled:opacity-50"
+                          >
+                            <Trash2 className="w-4.5 h-4.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          {filteredBanners.length > 0 && (
+            <div className="px-6 py-4 border-t border-red-200/50 flex flex-col sm:flex-row justify-between items-center gap-4 bg-red-50/30">
+              <span className="font-medium text-gray-600 text-sm">
+                Showing <span className="text-gray-800 font-bold">{indexOfFirstItem + 1}</span> to{' '}
+                <span className="text-gray-800 font-bold">
+                  {Math.min(indexOfLastItem, filteredBanners.length)}
+                </span>{' '}
+                of <span className="text-gray-800 font-bold">{filteredBanners.length}</span> banners
+              </span>
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="p-2 rounded-lg border border-red-200/50 bg-white text-gray-600 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+
+                {Array.from({ length: Math.min(totalPages, 5) }, (_, index) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = index + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = index + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + index;
+                  } else {
+                    pageNum = currentPage - 2 + index;
+                  }
+                  
+                  const isSelected = currentPage === pageNum;
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`w-9 h-9 rounded-lg text-sm font-bold transition-all duration-200 ${
+                        isSelected
+                          ? 'bg-red-600 text-white shadow-md'
+                          : 'bg-white border border-red-200/50 text-gray-700 hover:bg-red-50 hover:border-red-300'
+                      }`}
+                      aria-label={`Go to page ${pageNum}`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="p-2 rounded-lg border border-red-200/50 bg-white text-gray-600 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+                  aria-label="Next page"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Add/Edit Modal */}
@@ -295,70 +385,110 @@ export default function BannerPage() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={closeModal}>
           <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl border border-red-200" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-black text-black">
-                {editingId ? 'Edit Banner' : 'Upload Banner'}
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                {editingId ? (
+                  <>
+                    <Edit2 className="w-5 h-5 text-red-600" />
+                    Edit Banner
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-5 h-5 text-red-600" />
+                    Upload Banner
+                  </>
+                )}
               </h3>
               <button 
                 onClick={closeModal} 
-                className="p-2 rounded-lg text-black/40 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
+                className="p-2 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
+            {formError && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2 text-red-700 text-sm">
+                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <span>{formError}</span>
+              </div>
+            )}
+
             <form onSubmit={editingId ? handleUpdateBanner : handleCreateBanner} className="space-y-4 text-sm">
+              {/* Image Upload */}
               <div>
-                <label className="block text-xs font-black uppercase tracking-wider text-red-600 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
                   Banner Image *
                 </label>
                 {previewUrl ? (
-                  <div className="relative w-full h-40 rounded-lg overflow-hidden border-2 border-red-200">
-                    <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                  <div className="relative w-full h-48 rounded-lg overflow-hidden border-2 border-red-200 shadow-sm">
+                    <img 
+                      key={previewUrl}
+                      src={previewUrl} 
+                      alt="Preview" 
+                      className="w-full h-full object-cover" 
+                    />
                     <button
                       type="button"
                       onClick={() => {
+                        if (previewUrl && previewUrl.startsWith('blob:')) {
+                          URL.revokeObjectURL(previewUrl);
+                        }
                         setPreviewUrl('');
-                        setImage(null);
+                        setImageFile(null);
+                        if (fileInputRef.current) {
+                          fileInputRef.current.value = '';
+                        }
                       }}
-                      className="absolute top-2 right-2 p-1.5 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-full shadow-lg hover:shadow-red-600/30 transition-all"
+                      className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded-full shadow-lg hover:bg-red-700 transition-all"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
                 ) : (
-                  <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-red-300 rounded-lg cursor-pointer hover:bg-red-50/50 transition-all duration-200 hover:border-red-500">
-                    <Upload className="w-8 h-8 text-red-500/60 mb-2" />
-                    <span className="text-sm font-bold text-black">Click to upload banner</span>
-                    <span className="text-xs text-black/50 mt-1">PNG, JPG, GIF up to 5MB</span>
-                    <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                  <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-red-300 rounded-lg cursor-pointer hover:bg-red-50 transition-all duration-200 hover:border-red-500">
+                    <Upload className="w-10 h-10 text-red-400 mb-2" />
+                    <span className="text-sm font-medium text-gray-700">Click to upload banner</span>
+                    <span className="text-xs text-gray-400 mt-1">PNG, JPG, GIF up to 5MB</span>
+                    <input 
+                      ref={fileInputRef}
+                      type="file" 
+                      accept="image/*" 
+                      className="hidden" 
+                      onChange={handleImageChange} 
+                    />
                   </label>
                 )}
               </div>
 
+              {/* Title */}
               <div>
-                <label className="block text-xs font-black uppercase tracking-wider text-red-600 mb-1.5">
-                  Banner Title (Optional)
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                  Banner Title <span className="font-normal text-gray-400">(Optional)</span>
                 </label>
                 <input 
                   type="text" 
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Summer Special Offer"
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-red-200 text-sm text-black focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
+                  maxLength={100}
                 />
+                <div className="text-xs text-gray-400 mt-1 text-right">
+                  {title.length}/100
+                </div>
               </div>
 
-              <div className="flex gap-2.5 pt-2">
+              <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="flex-1 py-2.5 border border-red-200 rounded-lg font-bold text-black/70 hover:bg-red-50 transition-all duration-200"
+                  className="flex-1 py-2.5 border border-gray-200 rounded-lg font-semibold text-gray-600 hover:bg-gray-50 transition-all duration-200"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg font-bold hover:shadow-lg hover:shadow-red-600/20 transition-all duration-200"
+                  className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all duration-300"
                 >
                   {editingId ? 'Update Banner' : 'Save Changes'}
                 </button>
@@ -375,43 +505,57 @@ export default function BannerPage() {
           setViewingBanner(null);
         }}>
           <div className="bg-white rounded-xl w-full max-w-lg p-6 shadow-xl border border-red-200" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-black text-black">Banner Preview</h3>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <ImageIcon className="w-5 h-5 text-red-600" />
+                Banner Preview
+              </h3>
               <button 
                 onClick={() => {
                   setIsViewModalOpen(false);
                   setViewingBanner(null);
                 }}
-                className="p-2 rounded-lg text-black/40 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
+                className="p-2 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-4">
-              <div className="w-full h-56 rounded-lg overflow-hidden border-2 border-red-200">
-                <img src={viewingBanner.imageUrl} alt={viewingBanner.title || 'Banner'} className="w-full h-full object-cover" />
+            <div className="space-y-5">
+              {/* Image */}
+              <div className="w-full h-64 rounded-lg overflow-hidden border-2 border-red-200 shadow-md">
+                <img 
+                  src={viewingBanner.imageUrl} 
+                  alt={viewingBanner.title || 'Banner'} 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.src = 'https://via.placeholder.com/600x400/FF6B6B/FFFFFF?text=No+Image';
+                  }}
+                />
               </div>
               
-              <div className="space-y-2">
+              {/* Details */}
+              <div className="space-y-4 bg-red-50/50 p-4 rounded-lg border border-red-200/50">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-wider text-black/50">Title</p>
-                  <div className="text-sm font-bold text-black bg-red-50/20 px-3 py-2 rounded-lg border border-red-100">
-                    {viewingBanner.title || <span className="text-black/40 italic">Untitled Banner</span>}
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Title</p>
+                  <div className="text-base font-semibold text-gray-800 mt-1">
+                    {viewingBanner.title || <span className="text-gray-400 italic">Untitled Banner</span>}
                   </div>
                 </div>
+
                 <div>
-                  <p className="text-xs font-black uppercase tracking-wider text-black/50">Created Date</p>
-                  <p className="text-sm font-semibold text-black/80 bg-red-50/20 px-3 py-2 rounded-lg border border-red-100">{viewingBanner.createdAt}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Created Date</p>
+                  <p className="text-sm font-medium text-gray-700 mt-1">{viewingBanner.createdAt}</p>
                 </div>
               </div>
 
+              {/* Close Button */}
               <button
                 onClick={() => {
                   setIsViewModalOpen(false);
                   setViewingBanner(null);
                 }}
-                className="w-full py-2.5 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg font-bold hover:shadow-lg hover:shadow-red-600/20 transition-all duration-200"
+                className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all duration-300"
               >
                 Close
               </button>
