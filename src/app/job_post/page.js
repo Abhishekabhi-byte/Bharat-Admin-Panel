@@ -19,7 +19,8 @@ import {
   FileText,
   CheckCircle,
   Building,
-  DollarSign
+  DollarSign,
+  Filter
 } from 'lucide-react';
 
 export default function JobPostPage() {
@@ -33,6 +34,7 @@ export default function JobPostPage() {
       workType: 'Full Time',
       jobPostDate: '2026-07-01',
       jobRole: 'Senior Software Engineer',
+      filter: 'Backend, Frontend, Full Stack, React, Node.js, AWS',
       createdAt: '2026-07-01'
     },
     {
@@ -44,6 +46,7 @@ export default function JobPostPage() {
       workType: 'Full Time',
       jobPostDate: '2026-07-05',
       jobRole: 'Digital Marketing Manager',
+      filter: 'SEO, SEM, Social Media, Google Analytics, Content Strategy',
       createdAt: '2026-07-05'
     },
     {
@@ -55,6 +58,7 @@ export default function JobPostPage() {
       workType: 'Part Time',
       jobPostDate: '2026-07-10',
       jobRole: 'UI/UX Designer',
+      filter: 'Figma, Adobe XD, Sketch, Prototyping, User Research',
       createdAt: '2026-07-10'
     },
     {
@@ -66,6 +70,7 @@ export default function JobPostPage() {
       workType: 'Full Time',
       jobPostDate: '2026-07-15',
       jobRole: 'HR Manager',
+      filter: 'Recruitment, Employee Relations, Performance Management, HRIS',
       createdAt: '2026-07-15'
     },
     {
@@ -77,6 +82,7 @@ export default function JobPostPage() {
       workType: 'Contract',
       jobPostDate: '2026-07-18',
       jobRole: 'Sales Representative',
+      filter: 'B2B Sales, CRM, Cold Calling, Negotiation, Lead Generation',
       createdAt: '2026-07-18'
     },
     {
@@ -88,6 +94,7 @@ export default function JobPostPage() {
       workType: 'Full Time',
       jobPostDate: '2026-07-20',
       jobRole: 'Senior Financial Analyst',
+      filter: 'Financial Modeling, Excel, Forecasting, Budgeting, CPA',
       createdAt: '2026-07-20'
     },
     {
@@ -99,12 +106,14 @@ export default function JobPostPage() {
       workType: 'Part Time',
       jobPostDate: '2026-07-22',
       jobRole: 'Operations Manager',
+      filter: 'Process Improvement, Six Sigma, Supply Chain, Lean Management',
       createdAt: '2026-07-22'
     },
   ]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterKeyword, setFilterKeyword] = useState('');
   const itemsPerPage = 5;
 
   // Form state
@@ -115,6 +124,7 @@ export default function JobPostPage() {
   const [workType, setWorkType] = useState('');
   const [jobPostDate, setJobPostDate] = useState('');
   const [jobRole, setJobRole] = useState('');
+  const [filter, setFilter] = useState('');
   const [formError, setFormError] = useState('');
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -126,23 +136,30 @@ export default function JobPostPage() {
   // Work type options
   const workTypeOptions = ['Full Time', 'Part Time', 'Contract'];
 
-  // Filter jobs based on search
-  const filteredJobs = jobs.filter(job =>
-    job.jobField.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.jobRole.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.workType.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter jobs based on search and filter keyword
+  const filteredJobs = jobs.filter(job => {
+    const matchesSearch = 
+      job.jobField.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.jobRole.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.workType.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesFilter = 
+      !filterKeyword || 
+      (job.filter && job.filter.toLowerCase().includes(filterKeyword.toLowerCase()));
+    
+    return matchesSearch && matchesFilter;
+  });
 
   const totalPages = Math.ceil(filteredJobs.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentJobs = filteredJobs.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Reset to page 1 when search changes
+  // Reset to page 1 when search or filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, filterKeyword]);
 
   const handlePageChange = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
@@ -197,6 +214,7 @@ export default function JobPostPage() {
       workType: workType,
       jobPostDate: jobPostDate,
       jobRole: jobRole.trim(),
+      filter: filter.trim(),
       createdAt: new Date().toISOString().split('T')[0]
     };
 
@@ -215,6 +233,7 @@ export default function JobPostPage() {
     setWorkType(job.workType);
     setJobPostDate(job.jobPostDate);
     setJobRole(job.jobRole);
+    setFilter(job.filter || '');
     setFormError('');
     setIsModalOpen(true);
   };
@@ -235,7 +254,8 @@ export default function JobPostPage() {
             description: description.trim(),
             workType: workType,
             jobPostDate: jobPostDate,
-            jobRole: jobRole.trim()
+            jobRole: jobRole.trim(),
+            filter: filter.trim()
           }
         : job
     );
@@ -274,6 +294,7 @@ export default function JobPostPage() {
     setWorkType('');
     setJobPostDate('');
     setJobRole('');
+    setFilter('');
     setEditingId(null);
     setFormError('');
   };
@@ -308,8 +329,8 @@ export default function JobPostPage() {
       <div className="w-full max-w-7xl bg-slate-900 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20">
         {/* Table */}
         <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 shadow-xl overflow-hidden flex flex-col justify-between">
-          {/* Table Header with Search */}
-          <div className="flex justify-between items-center p-4 border-b border-red-200/50">
+          {/* Table Header with Search and Filter */}
+          <div className="flex flex-wrap justify-between items-center p-4 border-b border-red-200/50 gap-3">
             <div className="flex items-center gap-3">
               <Briefcase className="w-5 h-5 text-red-600" />
               <span className="font-semibold text-gray-800">Job Posts</span>
@@ -317,15 +338,27 @@ export default function JobPostPage() {
                 {filteredJobs.length}
               </span>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Search Input */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search jobs..."
-                  className="w-48 md:w-64 pl-9 pr-4 py-2 text-sm text-gray-800 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 bg-white/80"
+                  className="w-40 md:w-52 pl-9 pr-4 py-2 text-sm text-gray-800 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 bg-white/80"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              {/* Filter Input */}
+              <div className="relative">
+                <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Filter by keyword..."
+                  className="w-40 md:w-48 pl-9 pr-4 py-2 text-sm text-gray-800 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 bg-white/80"
+                  value={filterKeyword}
+                  onChange={(e) => setFilterKeyword(e.target.value)}
                 />
               </div>
               <button
@@ -359,7 +392,7 @@ export default function JobPostPage() {
                     <td colSpan="6" className="text-center py-16">
                       <Briefcase className="w-12 h-12 mx-auto text-gray-300 mb-3" />
                       <p className="font-medium text-gray-500 text-base">No job posts found</p>
-                      <p className="text-sm text-gray-400 mt-1">Try adjusting your search or post a new job</p>
+                      <p className="text-sm text-gray-400 mt-1">Try adjusting your search or filter</p>
                     </td>
                   </tr>
                 ) : (
@@ -561,10 +594,10 @@ export default function JobPostPage() {
                       onChange={(e) => setJobField(e.target.value)}
                       placeholder="e.g. Software Development"
                       className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
-                      maxLength={100}
+                      maxLength={200}
                     />
                     <div className="text-xs text-gray-400 mt-1 text-right">
-                      {jobField.length}/100
+                      {jobField.length}/200
                     </div>
                   </div>
 
@@ -579,10 +612,10 @@ export default function JobPostPage() {
                       onChange={(e) => setLocation(e.target.value)}
                       placeholder="e.g. San Francisco, CA or Remote"
                       className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
-                      maxLength={100}
+                      maxLength={200}
                     />
                     <div className="text-xs text-gray-400 mt-1 text-right">
-                      {location.length}/100
+                      {location.length}/200
                     </div>
                   </div>
 
@@ -597,10 +630,10 @@ export default function JobPostPage() {
                       onChange={(e) => setExperience(e.target.value)}
                       placeholder="e.g. 5-8 years"
                       className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
-                      maxLength={50}
+                      maxLength={100}
                     />
                     <div className="text-xs text-gray-400 mt-1 text-right">
-                      {experience.length}/50
+                      {experience.length}/100
                     </div>
                   </div>
                 </div>
@@ -649,13 +682,31 @@ export default function JobPostPage() {
                       placeholder="Describe the job responsibilities, requirements, and benefits..."
                       className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all resize-none"
                       rows="4"
-                      maxLength={1000}
+                     
                     />
-                    <div className="text-xs text-gray-400 mt-1 text-right">
-                      {description.length}/1000
-                    </div>
+                   
                   </div>
                 </div>
+              </div>
+
+              {/* Filter Field - Full Width */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                  Filter  <span className="font-normal text-gray-400">*</span>
+                </label>
+                <textarea 
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                  placeholder="Enter keywords for filtering e.g. Electrical Engineering..."
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all resize-none"
+                  rows="2"
+                  required
+                  maxLength={500}
+                />
+                <div className="text-xs text-gray-400 mt-1 text-right">
+                  {filter.length}/500
+                </div>
+                <p className="text-xs text-gray-400 mt-1">Enter comma-separated keywords for filtering job posts</p>
               </div>
 
               <div className="flex gap-3 pt-2">
@@ -767,6 +818,23 @@ export default function JobPostPage() {
                   {viewingJob.description}
                 </p>
               </div>
+
+              {/* Filter Field - Added to View Modal */}
+              {viewingJob.filter && (
+                <div>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <Filter className="w-4 h-4 text-red-600" />
+                    <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Filter / Keywords</p>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {viewingJob.filter.split(',').map((keyword, index) => (
+                      <span key={index} className="bg-red-50/80 text-gray-700 px-2.5 py-1 rounded-full border border-red-200/50 text-xs font-medium">
+                        {keyword.trim()}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Close Button */}
               <button

@@ -327,7 +327,7 @@ export default function FoundationPage() {
                   <th className="px-6 py-4 w-[120px]">Image</th>
                   <th className="px-6 py-4 min-w-[150px]">Title</th>
                   <th className="px-6 py-4 min-w-[200px]">Description</th>
-                  <th className="px-6 py-4 w-[120px] text-center">Status</th>
+                  
                   <th className="px-6 py-4 w-[160px] text-center">Created Date</th>
                   <th className="px-6 py-4 w-[160px] text-right">Actions</th>
                 </tr>
@@ -367,14 +367,7 @@ export default function FoundationPage() {
                         </span>
                       </td>
 
-                      <td className="px-6 py-4 text-center">
-                        <span className={`inline-flex items-center px-3 py-1.5 rounded-full border text-xs font-medium ${getStatusColor(foundation.status)}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full mr-1.5 
-                            ${foundation.status === 'Active' ? 'bg-green-500' : 'bg-yellow-500'}
-                          `} />
-                          {foundation.status}
-                        </span>
-                      </td>
+                     
 
                       <td className="px-6 py-4 text-gray-600 font-medium text-center text-sm">
                         {foundation.createdAt}
@@ -593,20 +586,7 @@ export default function FoundationPage() {
                 </div>
               </div>
 
-              {/* Status */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
-                  Status
-                </label>
-                <select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all bg-white"
-                >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
-              </div>
+          
 
               <div className="flex gap-3 pt-2">
                 <button
@@ -677,15 +657,7 @@ export default function FoundationPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Status</p>
-                    <span className={`inline-flex items-center px-3 py-1.5 rounded-full border text-xs font-medium mt-1.5 ${getStatusColor(viewingFoundation.status)}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full mr-1.5 
-                        ${viewingFoundation.status === 'Active' ? 'bg-green-500' : 'bg-yellow-500'}
-                      `} />
-                      {viewingFoundation.status}
-                    </span>
-                  </div>
+                 
                   <div>
                     <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Created Date</p>
                     <p className="text-sm font-medium text-gray-700 mt-1.5">{viewingFoundation.createdAt}</p>

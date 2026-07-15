@@ -14,7 +14,10 @@ import {
   Search,
   Calendar,
   FileText,
-  AlertCircle
+  AlertCircle,
+  File,
+  FileImage,
+  FileArchive
 } from 'lucide-react';
 
 export default function CertificatePage() {
@@ -22,37 +25,49 @@ export default function CertificatePage() {
     {
       id: 1,
       title: 'ISO 9001:2015 Quality Management',
-      imageUrl: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=250',
+      fileUrl: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=250',
+      fileType: 'image',
+      fileName: 'iso-certificate.jpg',
       createdAt: '2026-07-01'
     },
     {
       id: 2,
       title: '',
-      imageUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=250',
+      fileUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=250',
+      fileType: 'image',
+      fileName: 'certificate-2.jpg',
       createdAt: '2026-07-05'
     },
     {
       id: 3,
       title: 'ISO 14001:2015 Environmental Management',
-      imageUrl: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=250',
+      fileUrl: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=250',
+      fileType: 'image',
+      fileName: 'environment-cert.jpg',
       createdAt: '2026-07-06'
     },
     {
       id: 4,
       title: 'OHSAS 18001 Occupational Health & Safety',
-      imageUrl: 'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=250',
+      fileUrl: 'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=250',
+      fileType: 'image',
+      fileName: 'safety-cert.jpg',
       createdAt: '2026-07-07'
     },
     {
       id: 5,
       title: '',
-      imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=250',
+      fileUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=250',
+      fileType: 'image',
+      fileName: 'certificate-5.jpg',
       createdAt: '2026-07-08'
     },
     {
       id: 6,
       title: 'CE Certification - Product Compliance',
-      imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=250',
+      fileUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=250',
+      fileType: 'image',
+      fileName: 'ce-cert.jpg',
       createdAt: '2026-07-09'
     },
   ]);
@@ -63,8 +78,10 @@ export default function CertificatePage() {
 
   // Form state
   const [title, setTitle] = useState('');
-  const [imageFile, setImageFile] = useState(null);
+  const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
+  const [fileName, setFileName] = useState('');
+  const [fileType, setFileType] = useState('');
   const [formError, setFormError] = useState('');
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -77,7 +94,8 @@ export default function CertificatePage() {
 
   // Filter certificates based on search
   const filteredCertificates = certificates.filter(cert =>
-    cert.title.toLowerCase().includes(searchTerm.toLowerCase())
+    cert.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    cert.fileName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredCertificates.length / itemsPerPage);
@@ -105,19 +123,27 @@ export default function CertificatePage() {
     }
   };
 
-  const handleImageChange = (e) => {
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
     e.target.value = '';
 
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      setFormError('Please upload a valid image file (JPEG, PNG, GIF, WEBP).');
+    // Check file type
+    const isImage = file.type.startsWith('image/');
+    const isPDF = file.type === 'application/pdf';
+    const isDocument = file.type === 'application/msword' || 
+                       file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+                       file.type === 'application/vnd.ms-excel' ||
+                       file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+    if (!isImage && !isPDF && !isDocument) {
+      setFormError('Please upload a valid file (Images, PDF, DOC, DOCX, XLS, XLSX).');
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setFormError('Image size must be less than 5MB.');
+    if (file.size > 10 * 1024 * 1024) {
+      setFormError('File size must be less than 10MB.');
       return;
     }
 
@@ -127,13 +153,15 @@ export default function CertificatePage() {
       URL.revokeObjectURL(previewUrl);
     }
 
-    setImageFile(file);
+    setFile(file);
+    setFileName(file.name);
+    setFileType(isImage ? 'image' : (isPDF ? 'pdf' : 'document'));
     setPreviewUrl(URL.createObjectURL(file));
   };
 
   const validateForm = () => {
     if (!previewUrl) {
-      setFormError('Please select an image.');
+      setFormError('Please select a file.');
       return false;
     }
     return true;
@@ -148,7 +176,9 @@ export default function CertificatePage() {
     const newCertificate = {
       id: Date.now(),
       title: title.trim(),
-      imageUrl: previewUrl,
+      fileUrl: previewUrl,
+      fileType: fileType,
+      fileName: fileName,
       createdAt: new Date().toISOString().split('T')[0]
     };
 
@@ -161,8 +191,10 @@ export default function CertificatePage() {
   const handleEdit = (certificate) => {
     setEditingId(certificate.id);
     setTitle(certificate.title);
-    setPreviewUrl(certificate.imageUrl);
-    setImageFile(null);
+    setPreviewUrl(certificate.fileUrl);
+    setFileName(certificate.fileName);
+    setFileType(certificate.fileType);
+    setFile(null);
     setFormError('');
     setIsModalOpen(true);
   };
@@ -178,7 +210,9 @@ export default function CertificatePage() {
         ? { 
             ...cert, 
             title: title.trim(), 
-            imageUrl: previewUrl 
+            fileUrl: previewUrl,
+            fileType: fileType,
+            fileName: fileName
           }
         : cert
     );
@@ -213,9 +247,11 @@ export default function CertificatePage() {
     if (previewUrl && previewUrl.startsWith('blob:')) {
       URL.revokeObjectURL(previewUrl);
     }
-    setImageFile(null);
+    setFile(null);
     setPreviewUrl('');
     setTitle('');
+    setFileName('');
+    setFileType('');
     setEditingId(null);
     setFormError('');
     if (fileInputRef.current) {
@@ -228,15 +264,66 @@ export default function CertificatePage() {
     resetForm();
   };
 
-  return (
-    <div className="min-h-screen w-full  flex items-start justify-center p-3 md:p-6 relative overflow-hidden">
-      {/* Side Blur Effect - Left */}
-      <div className="absolute left-0 top-0 w-32 h-full bg-slate-900 to-transparent blur-2xl pointer-events-none"></div>
-      
-      {/* Side Blur Effect - Right */}
-      <div className=""></div>
+  // Get file icon based on type
+  const getFileIcon = (type) => {
+    switch(type) {
+      case 'image':
+        return <FileImage className="w-5 h-5" />;
+      case 'pdf':
+        return <FileText className="w-5 h-5" />;
+      case 'document':
+        return <FileArchive className="w-5 h-5" />;
+      default:
+        return <File className="w-5 h-5" />;
+    }
+  };
 
-      <div className="w-full max-w-7xl bg-slate-900 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20 relative z-10">
+  // Get file type label
+  const getFileTypeLabel = (type) => {
+    switch(type) {
+      case 'image':
+        return 'Image';
+      case 'pdf':
+        return 'PDF';
+      case 'document':
+        return 'Document';
+      default:
+        return 'File';
+    }
+  };
+
+  // Render file preview
+  const renderFilePreview = (certificate) => {
+    if (certificate.fileType === 'image') {
+      return (
+        <img 
+          src={certificate.fileUrl} 
+          alt={certificate.title || 'Certificate'} 
+          className="w-full h-full object-contain"
+          onError={(e) => {
+            e.target.src = 'https://via.placeholder.com/400x400/FF6B6B/FFFFFF?text=No+Image';
+          }}
+        />
+      );
+    } else {
+      return (
+        <div className="flex flex-col items-center justify-center w-full h-full bg-gray-50">
+          {getFileIcon(certificate.fileType)}
+          <p className="text-xs text-gray-500 mt-2 text-center px-2 truncate max-w-full">
+            {certificate.fileName}
+          </p>
+          <span className="text-[10px] text-gray-400 mt-1 px-2 py-0.5 bg-gray-200 rounded-full">
+            {getFileTypeLabel(certificate.fileType)}
+          </span>
+        </div>
+      );
+    }
+  };
+
+  return (
+    <div className="min-h-screen w-full bg-slate-900 flex items-start justify-center p-3 md:p-6 relative overflow-hidden">
+
+      <div className="w-full max-w-7xl bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20 relative z-10">
         {/* Table */}
         <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 shadow-xl overflow-hidden flex flex-col justify-between">
           
@@ -279,8 +366,9 @@ export default function CertificatePage() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-red-50/50 border-b border-red-200/50 text-gray-700 font-semibold uppercase text-xs tracking-wider">
-                  <th className="px-6 py-4 w-[120px]">Certificate</th>
+                  <th className="px-6 py-4 w-[120px]">File</th>
                   <th className="px-6 py-4 min-w-[150px]">Title</th>
+                  <th className="px-6 py-4 w-[120px] text-center">Type</th>
                   <th className="px-6 py-4 w-[160px] text-center">Created Date</th>
                   <th className="px-6 py-4 w-[160px] text-right">Actions</th>
                 </tr>
@@ -288,7 +376,7 @@ export default function CertificatePage() {
               <tbody className="divide-y divide-red-100/50">
                 {currentCertificates.length === 0 ? (
                   <tr>
-                    <td colSpan="4" className="text-center py-16">
+                    <td colSpan="5" className="text-center py-16">
                       <Award className="w-12 h-12 mx-auto text-gray-300 mb-3" />
                       <p className="font-medium text-gray-500 text-base">No certificates found</p>
                       <p className="text-sm text-gray-400 mt-1">Try adjusting your search or add a new certificate</p>
@@ -299,14 +387,7 @@ export default function CertificatePage() {
                     <tr key={certificate.id} className="hover:bg-red-50/30 transition-colors duration-150">
                       <td className="px-6 py-4">
                         <div className="w-16 h-16 rounded-lg overflow-hidden border border-red-200 shadow-sm bg-white flex items-center justify-center p-1.5">
-                          <img 
-                            src={certificate.imageUrl} 
-                            alt={certificate.title || 'Certificate'} 
-                            className="w-full h-full object-contain"
-                            onError={(e) => {
-                              e.target.src = 'https://via.placeholder.com/100x100/FF6B6B/FFFFFF?text=No+Image';
-                            }}
-                          />
+                          {renderFilePreview(certificate)}
                         </div>
                       </td>
                       
@@ -318,6 +399,18 @@ export default function CertificatePage() {
                             Untitled Certificate
                           </span>
                         )}
+                        <p className="text-[10px] text-gray-400 truncate max-w-[150px]">{certificate.fileName}</p>
+                      </td>
+
+                      <td className="px-6 py-4 text-center">
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium ${
+                          certificate.fileType === 'image' ? 'bg-blue-100 text-blue-700 border-blue-200' :
+                          certificate.fileType === 'pdf' ? 'bg-red-100 text-red-700 border-red-200' :
+                          'bg-purple-100 text-purple-700 border-purple-200'
+                        }`}>
+                          {getFileIcon(certificate.fileType)}
+                          {getFileTypeLabel(certificate.fileType)}
+                        </span>
                       </td>
 
                       <td className="px-6 py-4 text-gray-600 font-medium text-center text-sm">
@@ -455,19 +548,29 @@ export default function CertificatePage() {
             )}
 
             <form onSubmit={editingId ? handleUpdateCertificate : handleCreateCertificate} className="space-y-4 text-sm">
-              {/* Image Upload */}
+              {/* File Upload */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
-                  Certificate Image *
+                  Certificate File * <span className="font-normal text-gray-400">(Image, PDF, DOC, DOCX, XLS, XLSX)</span>
                 </label>
                 {previewUrl ? (
                   <div className="relative w-full h-48 rounded-lg overflow-hidden border-2 border-red-200 shadow-sm bg-white flex items-center justify-center p-4">
-                    <img 
-                      key={previewUrl}
-                      src={previewUrl} 
-                      alt="Preview" 
-                      className="w-full h-full object-contain" 
-                    />
+                    {fileType === 'image' ? (
+                      <img 
+                        key={previewUrl}
+                        src={previewUrl} 
+                        alt="Preview" 
+                        className="w-full h-full object-contain" 
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center">
+                        {getFileIcon(fileType)}
+                        <p className="text-sm font-medium text-gray-700 mt-2">{fileName}</p>
+                        <span className="text-xs text-gray-400 mt-1 px-2 py-0.5 bg-gray-100 rounded-full">
+                          {getFileTypeLabel(fileType)}
+                        </span>
+                      </div>
+                    )}
                     <button
                       type="button"
                       onClick={() => {
@@ -475,7 +578,9 @@ export default function CertificatePage() {
                           URL.revokeObjectURL(previewUrl);
                         }
                         setPreviewUrl('');
-                        setImageFile(null);
+                        setFile(null);
+                        setFileName('');
+                        setFileType('');
                         if (fileInputRef.current) {
                           fileInputRef.current.value = '';
                         }
@@ -488,15 +593,15 @@ export default function CertificatePage() {
                 ) : (
                   <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-red-300 rounded-lg cursor-pointer hover:bg-red-50 transition-all duration-200 hover:border-red-500">
                     <Upload className="w-10 h-10 text-red-400 mb-2" />
-                    <span className="text-sm font-medium text-gray-700">Click to upload certificate</span>
-                    <span className="text-xs text-gray-400 mt-1">PNG, JPG, GIF up to 5MB</span>
-                    <span className="text-xs text-gray-400">Recommended: High-quality image</span>
+                    <span className="text-sm font-medium text-gray-700">Click to upload file</span>
+                    <span className="text-xs text-gray-400 mt-1">Images, PDF, DOC, DOCX, XLS, XLSX</span>
+                    <span className="text-xs text-gray-400">Max size: 10MB</span>
                     <input 
                       ref={fileInputRef}
                       type="file" 
-                      accept="image/*" 
+                      accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" 
                       className="hidden" 
-                      onChange={handleImageChange} 
+                      onChange={handleFileChange} 
                     />
                   </label>
                 )}
@@ -564,16 +669,37 @@ export default function CertificatePage() {
             </div>
 
             <div className="space-y-5">
-              {/* Certificate Image */}
+              {/* File Preview */}
               <div className="w-full h-64 rounded-lg overflow-hidden border-2 border-red-200 shadow-md bg-white flex items-center justify-center p-6">
-                <img 
-                  src={viewingCertificate.imageUrl} 
-                  alt={viewingCertificate.title || 'Certificate'} 
-                  className="w-full h-full object-contain"
-                  onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/400x400/FF6B6B/FFFFFF?text=No+Image';
-                  }}
-                />
+                {viewingCertificate.fileType === 'image' ? (
+                  <img 
+                    src={viewingCertificate.fileUrl} 
+                    alt={viewingCertificate.title || 'Certificate'} 
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.target.src = 'https://via.placeholder.com/400x400/FF6B6B/FFFFFF?text=No+Image';
+                    }}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center">
+                    {getFileIcon(viewingCertificate.fileType)}
+                    <p className="text-sm font-medium text-gray-700 mt-3">{viewingCertificate.fileName}</p>
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium mt-2 ${
+                      viewingCertificate.fileType === 'pdf' ? 'bg-red-100 text-red-700 border-red-200' :
+                      'bg-purple-100 text-purple-700 border-purple-200'
+                    }`}>
+                      {getFileTypeLabel(viewingCertificate.fileType)}
+                    </span>
+                    <a 
+                      href={viewingCertificate.fileUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="mt-3 text-sm text-red-600 hover:text-red-700 font-medium underline"
+                    >
+                      Download File
+                    </a>
+                  </div>
+                )}
               </div>
               
               {/* Details */}
@@ -583,6 +709,23 @@ export default function CertificatePage() {
                   <p className="text-base font-semibold text-gray-800 mt-1">
                     {viewingCertificate.title || <span className="text-gray-400 italic">Untitled Certificate</span>}
                   </p>
+                </div>
+
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">File Name</p>
+                  <p className="text-sm font-medium text-gray-700 mt-1">{viewingCertificate.fileName}</p>
+                </div>
+
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">File Type</p>
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium mt-1 ${
+                    viewingCertificate.fileType === 'image' ? 'bg-blue-100 text-blue-700 border-blue-200' :
+                    viewingCertificate.fileType === 'pdf' ? 'bg-red-100 text-red-700 border-red-200' :
+                    'bg-purple-100 text-purple-700 border-purple-200'
+                  }`}>
+                    {getFileIcon(viewingCertificate.fileType)}
+                    {getFileTypeLabel(viewingCertificate.fileType)}
+                  </span>
                 </div>
 
                 <div>

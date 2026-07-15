@@ -24,7 +24,11 @@ import {
   FolderOpen,
   BadgePlus,
   ClipboardList,
-  Images
+  Images,
+  GalleryVertical,
+  Briefcase as CareerIcon,
+  FolderGit2,
+  LayoutGrid
 } from 'lucide-react';
 
 import { PiCertificateFill } from "react-icons/pi";
@@ -33,37 +37,55 @@ import { PiCertificateFill } from "react-icons/pi";
 const homeSections = [
   { name: "Banner", path: "/banner", icon: Image },
   { name: "Foundation", path: "/foundation", icon: Building2 },
+  { name: "Integrated Services", path: "/services", icon: BriefcaseBusiness },
   { name: "Build Performance", path: "/build_performance", icon: Briefcase },
-  { name: "Client voice", path: "/client", icon: Users },
   { name: "Brand logo", path: "/logo", icon: Diamond },
+  { name: "Client voice", path: "/client", icon: Users },
 ];
 
 // About sections 
 const aboutSections = [
-  { name: "Festival", path: "/festival", icon: PartyPopper },
-  { name: "Team Image", path: "/Team_image", icon: UserRoundCog },
+  { name: "Certificate", path: "/certificate", icon: PiCertificateFill },
+  { name: "Leadership Team", path: "/Team_image", icon: UserRoundCog },
   { name: "Team Group Image", path: "/group_image", icon: Images },
+  { name: "Festival & Culture", path: "/festival", icon: PartyPopper },
   { name: "Celebrating Years", path: "/celebrating_years", icon: CalendarDays },
   { name: "Legacy", path: "/legacy", icon: ShieldCheck },
   { name: "Celebrating Moments", path: "/celebrating_moments", icon: Sparkles },
   { name: "Employee Award", path: "/employee_award", icon: Award },
-  { name: "Journey", path: "/journey", icon: Map },
-  { name: "Certificate", path: "/certificate", icon: PiCertificateFill },
 ];
 
 // Service sections
 const serviceSections = [ 
-  { name: "Integrated Services", path: "/services", icon: BriefcaseBusiness },
   { name: "Portfolio showcase", path: "/portfolio_showcase", icon: FolderOpen },
-  { name: "Job Post", path: "/job_post", icon: BadgePlus },
+];
+
+// Project sections - NEW
+const projectSections = [
   { name: "Projects", path: "/project", icon: ClipboardList },
 ];
+
+
+// Gallery sections
+const gallerySections = [
+  { name: "Journey", path: "/journey", icon: Map },
+];
+
+// Career sections
+const careerSections = [
+  { name: "Job Post", path: "/job_post", icon: BadgePlus },
+];
+
+
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [isHomeOpen, setIsHomeOpen] = useState(true);
   const [isAboutOpen, setIsAboutOpen] = useState(true);
   const [isServiceOpen, setIsServiceOpen] = useState(true);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(true);
+  const [isCareerOpen, setIsCareerOpen] = useState(true);
+  const [isProjectOpen, setIsProjectOpen] = useState(true);
 
   const isPathActive = (path) => {
     if (path === '/') {
@@ -96,11 +118,10 @@ export default function Sidebar() {
       <nav 
         className="flex-1 px-3 py-6 space-y-1 overflow-y-auto"
         style={{
-          scrollbarWidth: 'none',          /* Firefox */
-          msOverflowStyle: 'none',         /* IE and Edge */
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
         }}
       >
-        {/* Style block to inject webkit scrollbar hiding rule for Chrome/Safari */}
         <style dangerouslySetInnerHTML={{__html: `
           nav::-webkit-scrollbar {
             display: none !important;
@@ -269,6 +290,159 @@ export default function Sidebar() {
             </div>
           )}
         </div>
+
+
+   {/* Project Dropdown - NEW */}
+        <div className="mt-1">
+          <button
+            onClick={() => setIsProjectOpen(!isProjectOpen)}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 group ${
+              isSectionActive(projectSections)
+                ? 'bg-slate-850 text-white font-semibold border border-slate-700/50 shadow-sm'
+                : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-100'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <LayoutGrid className={`w-5 h-5 transition-transform duration-200 group-hover:scale-105 ${isSectionActive(projectSections) ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300'}`} />
+              <span className="text-sm tracking-wide">Project</span>
+            </div>
+            {isProjectOpen ? (
+              <ChevronDown className="w-4 h-4 text-slate-500" />
+            ) : (
+              <ChevronRight className="w-4 h-4 text-slate-500" />
+            )}
+          </button>
+          
+          {isProjectOpen && (
+            <div className="ml-4 mt-1 space-y-1 border-l border-slate-800 pl-3">
+              {projectSections.map((section) => {
+                const Icon = section.icon;
+                const isActive = isPathActive(section.path);
+
+                return (
+                  <Link
+                    key={section.name}
+                    href={section.path}
+                    className={`flex items-center justify-between px-4 py-2.5 rounded-lg transition-all duration-200 group ${
+                      isActive
+                        ? 'bg-indigo-600 text-white font-semibold shadow-md shadow-indigo-950/50'
+                        : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-100'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon className={`w-4 h-4 transition-transform duration-200 group-hover:scale-105 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'}`} />
+                      <span className="text-xs tracking-wide">{section.name}</span>
+                    </div>
+                    {isActive && <span className="text-[10px] text-white/80">▶</span>}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+
+
+
+        {/* Gallery Dropdown */}
+        <div className="mt-1">
+          <button
+            onClick={() => setIsGalleryOpen(!isGalleryOpen)}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 group ${
+              isSectionActive(gallerySections)
+                ? 'bg-slate-850 text-white font-semibold border border-slate-700/50 shadow-sm'
+                : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-100'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <GalleryVertical className={`w-5 h-5 transition-transform duration-200 group-hover:scale-105 ${isSectionActive(gallerySections) ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300'}`} />
+              <span className="text-sm tracking-wide">Gallery</span>
+            </div>
+            {isGalleryOpen ? (
+              <ChevronDown className="w-4 h-4 text-slate-500" />
+            ) : (
+              <ChevronRight className="w-4 h-4 text-slate-500" />
+            )}
+          </button>
+          
+          {isGalleryOpen && (
+            <div className="ml-4 mt-1 space-y-1 border-l border-slate-800 pl-3">
+              {gallerySections.map((section) => {
+                const Icon = section.icon;
+                const isActive = isPathActive(section.path);
+
+                return (
+                  <Link
+                    key={section.name}
+                    href={section.path}
+                    className={`flex items-center justify-between px-4 py-2.5 rounded-lg transition-all duration-200 group ${
+                      isActive
+                        ? 'bg-indigo-600 text-white font-semibold shadow-md shadow-indigo-950/50'
+                        : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-100'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon className={`w-4 h-4 transition-transform duration-200 group-hover:scale-105 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'}`} />
+                      <span className="text-xs tracking-wide">{section.name}</span>
+                    </div>
+                    {isActive && <span className="text-[10px] text-white/80">▶</span>}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Career Dropdown */}
+        <div className="mt-1">
+          <button
+            onClick={() => setIsCareerOpen(!isCareerOpen)}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 group ${
+              isSectionActive(careerSections)
+                ? 'bg-slate-850 text-white font-semibold border border-slate-700/50 shadow-sm'
+                : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-100'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <CareerIcon className={`w-5 h-5 transition-transform duration-200 group-hover:scale-105 ${isSectionActive(careerSections) ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300'}`} />
+              <span className="text-sm tracking-wide">Career</span>
+            </div>
+            {isCareerOpen ? (
+              <ChevronDown className="w-4 h-4 text-slate-500" />
+            ) : (
+              <ChevronRight className="w-4 h-4 text-slate-500" />
+            )}
+          </button>
+          
+          {isCareerOpen && (
+            <div className="ml-4 mt-1 space-y-1 border-l border-slate-800 pl-3">
+              {careerSections.map((section) => {
+                const Icon = section.icon;
+                const isActive = isPathActive(section.path);
+
+                return (
+                  <Link
+                    key={section.name}
+                    href={section.path}
+                    className={`flex items-center justify-between px-4 py-2.5 rounded-lg transition-all duration-200 group ${
+                      isActive
+                        ? 'bg-indigo-600 text-white font-semibold shadow-md shadow-indigo-950/50'
+                        : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-100'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon className={`w-4 h-4 transition-transform duration-200 group-hover:scale-105 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'}`} />
+                      <span className="text-xs tracking-wide">{section.name}</span>
+                    </div>
+                    {isActive && <span className="text-[10px] text-white/80">▶</span>}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+     
 
       </nav>
 

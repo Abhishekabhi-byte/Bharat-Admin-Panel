@@ -642,11 +642,9 @@ export default function AdminPage() {
                       placeholder="Describe your item in detail..."
                       rows="3"
                       className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all resize-none"
-                      maxLength={500}
+                     
                     />
-                    <div className="text-xs text-gray-400 mt-1 text-right">
-                      {description.length}/500
-                    </div>
+                   
                   </div>
 
                   {/* Category */}
