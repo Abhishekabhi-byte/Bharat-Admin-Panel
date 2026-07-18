@@ -20,15 +20,16 @@ import {
   CheckCircle,
   ImagePlus,
   List,
-  GripVertical
+  GripVertical,
+  Zap
 } from 'lucide-react';
 
-export default function PortfolioShowcaseAdmin() {
+export default function DomesticWiringPortfolio() {
   const [portfolios, setPortfolios] = useState([
     {
       id: 1,
-      title: 'E-Commerce Platform Development',
-      subTitle: 'Full-featured online store with real-time inventory',
+      title: 'Residential Wiring Installation',
+      subTitle: 'Complete electrical wiring for luxury residential complex with modern safety features',
       images: [
         'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400',
         'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=400',
@@ -38,8 +39,8 @@ export default function PortfolioShowcaseAdmin() {
     },
     {
       id: 2,
-      title: 'Mobile App UI/UX Design',
-      subTitle: 'Award-winning mobile application with intuitive interface',
+      title: 'Smart Home Automation Wiring',
+      subTitle: 'Advanced home automation wiring with integrated lighting and security systems',
       images: [
         'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400',
         'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400'
@@ -48,8 +49,8 @@ export default function PortfolioShowcaseAdmin() {
     },
     {
       id: 3,
-      title: 'Corporate Brand Identity',
-      subTitle: 'Complete brand identity package with guidelines',
+      title: 'Commercial Building Electrical Work',
+      subTitle: 'Comprehensive electrical wiring for commercial office spaces and retail outlets',
       images: [
         'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=400',
         'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=400'
@@ -58,8 +59,8 @@ export default function PortfolioShowcaseAdmin() {
     },
     {
       id: 4,
-      title: 'AI-Powered Analytics Dashboard',
-      subTitle: 'Real-time analytics with AI-driven insights',
+      title: 'Industrial Facility Wiring',
+      subTitle: 'Heavy-duty electrical wiring for industrial facilities with high-power equipment',
       images: [
         'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400',
         'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400'
@@ -68,8 +69,8 @@ export default function PortfolioShowcaseAdmin() {
     },
     {
       id: 5,
-      title: 'Social Media Campaign',
-      subTitle: 'Comprehensive social media marketing strategy',
+      title: 'Solar Panel Wiring Installation',
+      subTitle: 'Professional solar panel wiring with grid-tie and off-grid systems',
       images: [
         'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=400',
         'https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=400',
@@ -79,8 +80,8 @@ export default function PortfolioShowcaseAdmin() {
     },
     {
       id: 6,
-      title: 'Healthcare Management System',
-      subTitle: 'Comprehensive healthcare platform for hospitals',
+      title: 'Data Center Cabling',
+      subTitle: 'High-performance structured cabling for data centers and server rooms',
       images: [
         'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400',
         'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400'
@@ -89,8 +90,8 @@ export default function PortfolioShowcaseAdmin() {
     },
     {
       id: 7,
-      title: 'E-Learning Platform',
-      subTitle: 'Interactive online learning management system',
+      title: 'Renovation & Rewiring Services',
+      subTitle: 'Complete rewiring and renovation of old electrical systems for safety and efficiency',
       images: [
         'https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=400',
         'https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=400'
@@ -312,15 +313,15 @@ export default function PortfolioShowcaseAdmin() {
 
   return (
     <div className="min-h-screen w-full  flex items-start justify-center p-4 md:p-8 relative overflow-hidden">
-   
+     
       <div className="w-full max-w-7xl bg-slate-700 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20 relative z-10">
         {/* Table */}
         <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 shadow-xl overflow-hidden flex flex-col justify-between">
           {/* Table Header with Search */}
           <div className="flex flex-wrap justify-between items-center p-5 border-b border-red-200/50 gap-3">
             <div className="flex items-center gap-3">
-              <FolderOpen className="w-5 h-5 text-red-600" />
-              <span className="font-semibold text-gray-800 text-base">Portfolio Showcase</span>
+              <Zap className="w-5 h-5 text-red-600" />
+              <span className="font-semibold text-gray-800 text-base">Domestic Wiring Excellence</span>
               <span className="text-xs bg-red-100 text-red-700 px-2.5 py-1 rounded-full font-medium">
                 {filteredPortfolios.length}
               </span>
@@ -636,7 +637,7 @@ export default function PortfolioShowcaseAdmin() {
                       type="text" 
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      placeholder="e.g. E-Commerce Platform Development"
+                      placeholder="e.g. Residential Wiring Installation"
                       className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
                       maxLength={200}
                     />
@@ -654,7 +655,7 @@ export default function PortfolioShowcaseAdmin() {
                       type="text" 
                       value={subTitle}
                       onChange={(e) => setSubTitle(e.target.value)}
-                      placeholder="e.g. Full-featured online store with real-time inventory"
+                      placeholder="e.g. Complete electrical wiring for residential complex"
                       className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
                       maxLength={200}
                     />
@@ -663,8 +664,7 @@ export default function PortfolioShowcaseAdmin() {
                     </div>
                   </div>
 
-                
-               
+             
                 </div>
               </div>
 

@@ -277,14 +277,22 @@ export default function EmployeeAwardsPage() {
     resetForm();
   };
 
-  // Truncate description to 40 characters
-  const truncateDescription = (text, maxLength = 40) => {
+  // Improved description truncation with configurable length
+  const truncateDescription = (text, maxLength = 45) => {
+    if (!text) return '';
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
   };
 
+  // Get description preview for table
+  const getDescriptionPreview = (description) => {
+    // Show first 45 characters as preview
+    if (description.length <= 45) return description;
+    return description.substring(0, 45) + '...';
+  };
+
   return (
-    <div className="min-h-screen w-full  flex items-start justify-center p-3 md:p-6">
+    <div className="min-h-screen w-full flex items-start justify-center p-3 md:p-6">
       <div className="w-full max-w-7xl bg-slate-900 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20">
         {/* Table */}
         <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 shadow-xl overflow-hidden flex flex-col justify-between">
@@ -368,8 +376,11 @@ export default function EmployeeAwardsPage() {
                       </td>
 
                       <td className="px-6 py-4">
-                        <p className="text-sm text-gray-600 max-w-xs" title={award.description}>
-                          {truncateDescription(award.description, 40)}
+                        <p 
+                          className="text-sm text-gray-600 max-w-xs" 
+                          title={award.description}
+                        >
+                          {getDescriptionPreview(award.description)}
                         </p>
                       </td>
 
@@ -481,7 +492,7 @@ export default function EmployeeAwardsPage() {
         </div>
       </div>
 
-      {/* Add/Edit Modal */}
+      {/* Add/Edit Modal - Fixed description display */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-in fade-in duration-200" onClick={closeModal}>
           <div className="bg-white rounded-2xl w-full max-w-2xl p-6 shadow-2xl border border-red-200/50 max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-300" onClick={(e) => e.stopPropagation()}>
@@ -598,10 +609,10 @@ export default function EmployeeAwardsPage() {
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder="e.g. Employee of the Year 2026"
                       className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
-                      maxLength={300}
+                      maxLength={100}
                     />
                     <div className="text-xs text-gray-400 mt-1 text-right">
-                      {title.length}/300
+                      {title.length}/100
                     </div>
                   </div>
 
@@ -616,9 +627,11 @@ export default function EmployeeAwardsPage() {
                       placeholder="Describe the award, its significance, and what it recognizes..."
                       className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all resize-none"
                       rows="3"
-                     
+                      maxLength={500}
                     />
-                   
+                    <div className="text-xs text-gray-400 mt-1 text-right">
+                      {description.length}/500
+                    </div>
                   </div>
                 </div>
               </div>

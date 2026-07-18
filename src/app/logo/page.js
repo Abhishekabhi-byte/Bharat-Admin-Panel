@@ -270,7 +270,7 @@ export default function LogoPage() {
               <thead>
                 <tr className="bg-red-50/50 border-b border-red-200/50 text-gray-700 font-semibold uppercase text-xs tracking-wider">
                   <th className="px-6 py-4 w-[100px] text-center">Logo</th>
-                  <th className="px-6 py-4 min-w-[150px] text-center">Title</th>
+              
                   <th className="px-6 py-4 w-[160px] text-center">Created Date</th>
                   <th className="px-6 py-4 w-[160px] text-right">Actions</th>
                 </tr>
@@ -300,15 +300,7 @@ export default function LogoPage() {
                         </div>
                       </td>
                       
-                      <td className="px-6 py-4 text-center">
-                        {logo.title ? (
-                          <span className="font-semibold text-gray-800 block text-base">{logo.title}</span>
-                        ) : (
-                          <span className="text-xs italic text-gray-400 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200">
-                            Untitled Logo
-                          </span>
-                        )}
-                      </td>
+             
 
                       <td className="px-6 py-4 text-gray-600 font-medium text-center text-sm">
                         {logo.createdAt}
@@ -493,7 +485,7 @@ export default function LogoPage() {
               </div>
 
               {/* Title */}
-              <div>
+              {/* <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
                   Logo Title <span className="font-normal text-gray-400">(Optional)</span>
                 </label>
@@ -508,7 +500,7 @@ export default function LogoPage() {
                 <div className="text-xs text-gray-400 mt-1 text-right">
                   {title.length}/100
                 </div>
-              </div>
+              </div> */}
 
               <div className="flex gap-3 pt-2">
                 <button
@@ -568,12 +560,7 @@ export default function LogoPage() {
               
               {/* Details */}
               <div className="space-y-4 bg-red-50/50 p-4 rounded-lg border border-red-200/50">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Title</p>
-                  <p className="text-base font-semibold text-gray-800 mt-1">
-                    {viewingLogo.title || <span className="text-gray-400 italic">Untitled Logo</span>}
-                  </p>
-                </div>
+               
 
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Created Date</p>

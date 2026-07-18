@@ -162,6 +162,10 @@ export default function LegacySection() {
       setFormError('Please enter the description.');
       return false;
     }
+    if (description.length > 500) {
+      setFormError('Description must be less than 500 characters.');
+      return false;
+    }
     return true;
   };
 
@@ -175,7 +179,7 @@ export default function LegacySection() {
       id: Date.now(),
       title: title.trim(),
       description: description.trim(),
-      imageUrl: previewUrl, // Store the image URL (could be blob URL)
+      imageUrl: previewUrl,
       createdAt: new Date().toISOString().split('T')[0]
     };
 
@@ -207,7 +211,7 @@ export default function LegacySection() {
             ...legacy,
             title: title.trim(),
             description: description.trim(),
-            imageUrl: previewUrl // Use the current preview URL
+            imageUrl: previewUrl
           }
         : legacy
     );
@@ -239,7 +243,6 @@ export default function LegacySection() {
   };
 
   const resetForm = () => {
-    // Only revoke blob URLs, not HTTP URLs
     if (previewUrl && previewUrl.startsWith('blob:')) {
       URL.revokeObjectURL(previewUrl);
     }
@@ -266,8 +269,8 @@ export default function LegacySection() {
   };
 
   return (
-    <div className="min-h-screen w-full  flex items-start justify-center p-3 md:p-6">
-      <div className="w-full max-w-7xl bg-slate-900 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20">
+    <div className="min-h-screen w-full bg-gradient-to-br from-red-900 via-red-800 to-red-700 flex items-start justify-center p-3 md:p-6">
+      <div className="w-full max-w-7xl bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20">
         {/* Table */}
         <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 shadow-xl overflow-hidden flex flex-col justify-between">
           {/* Table Header with Search */}
@@ -551,14 +554,17 @@ export default function LegacySection() {
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder="e.g. Pioneering Innovation"
                       className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
-                      maxLength={300}
+                      maxLength={100}
                     />
+                    <div className="text-xs text-gray-400 mt-1 text-right">
+                      {title.length}/100
+                    </div>
                   </div>
 
-                  {/* Description */}
+                  {/* Description with 500 character limit */}
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
-                      Description *
+                      Description * <span className="font-normal text-gray-400">(Max 500 characters)</span>
                     </label>
                     <textarea 
                       value={description}
@@ -566,9 +572,16 @@ export default function LegacySection() {
                       placeholder="Describe the legacy, its significance, and impact..."
                       className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all resize-none"
                       rows="5"
-                     
+                      maxLength={500}
                     />
-                    
+                    <div className="text-xs text-gray-400 mt-1 text-right">
+                      {description.length}/500 characters
+                    </div>
+                    {description.length >= 450 && (
+                      <div className={`text-xs mt-1 text-right ${description.length >= 500 ? 'text-red-600 font-semibold' : 'text-orange-500'}`}>
+                        {description.length >= 500 ? '⚠️ Maximum limit reached!' : `${500 - description.length} characters remaining`}
+                    </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -656,6 +669,9 @@ export default function LegacySection() {
                   <p className="text-sm text-gray-700 bg-red-50/50 px-4 py-2.5 rounded-xl border border-red-200/50 max-h-40 overflow-y-auto">
                     {viewingLegacy.description}
                   </p>
+                  <div className="text-xs text-gray-400 mt-1 text-right">
+                    {viewingLegacy.description.length} characters
+                  </div>
                 </div>
               </div>
 
