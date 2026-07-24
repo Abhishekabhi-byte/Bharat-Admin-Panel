@@ -12,76 +12,69 @@ import {
   ChevronLeft, 
   ChevronRight,
   Search,
-  Calendar,
-  FileText,
   AlertCircle,
+  FileText,
   File,
-  FileImage,
-  FileArchive
+  CheckCircle,
+  Download,
+  Maximize2
 } from 'lucide-react';
 
-export default function CertificatePage() {
+export default function CertificateSection() {
   const [certificates, setCertificates] = useState([
     {
       id: 1,
-      title: 'ISO 9001:2015 Quality Management',
-      fileUrl: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=250',
-      fileType: 'image',
-      fileName: 'iso-certificate.jpg',
+      fileName: 'ISO_9001_Certificate.pdf',
+      fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+      fileSize: '1.2 MB',
       createdAt: '2026-07-01'
     },
     {
       id: 2,
-      title: '',
-      fileUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=250',
-      fileType: 'image',
-      fileName: 'certificate-2.jpg',
+      fileName: 'ISO_14001_Certificate.pdf',
+      fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+      fileSize: '2.4 MB',
       createdAt: '2026-07-05'
     },
     {
       id: 3,
-      title: 'ISO 14001:2015 Environmental Management',
-      fileUrl: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=250',
-      fileType: 'image',
-      fileName: 'environment-cert.jpg',
+      fileName: 'OHSAS_18001_Certificate.pdf',
+      fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+      fileSize: '1.8 MB',
       createdAt: '2026-07-06'
     },
     {
       id: 4,
-      title: 'OHSAS 18001 Occupational Health & Safety',
-      fileUrl: 'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=250',
-      fileType: 'image',
-      fileName: 'safety-cert.jpg',
+      fileName: 'CE_Certification.pdf',
+      fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+      fileSize: '3.1 MB',
       createdAt: '2026-07-07'
     },
     {
       id: 5,
-      title: '',
-      fileUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=250',
-      fileType: 'image',
-      fileName: 'certificate-5.jpg',
+      fileName: 'Quality_Management_Certificate.pdf',
+      fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+      fileSize: '1.5 MB',
       createdAt: '2026-07-08'
     },
     {
       id: 6,
-      title: 'CE Certification - Product Compliance',
-      fileUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=250',
-      fileType: 'image',
-      fileName: 'ce-cert.jpg',
+      fileName: 'Safety_Compliance_Certificate.pdf',
+      fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+      fileSize: '2.0 MB',
       createdAt: '2026-07-09'
     },
   ]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
-  const itemsPerPage = 5;
+  const itemsPerPage = 6;
 
   // Form state
-  const [title, setTitle] = useState('');
-  const [file, setFile] = useState(null);
+  const [pdfFile, setPdfFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
   const [fileName, setFileName] = useState('');
-  const [fileType, setFileType] = useState('');
+  const [fileSize, setFileSize] = useState('');
   const [formError, setFormError] = useState('');
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -94,7 +87,6 @@ export default function CertificatePage() {
 
   // Filter certificates based on search
   const filteredCertificates = certificates.filter(cert =>
-    cert.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     cert.fileName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -129,16 +121,8 @@ export default function CertificatePage() {
 
     if (!file) return;
 
-    // Check file type
-    const isImage = file.type.startsWith('image/');
-    const isPDF = file.type === 'application/pdf';
-    const isDocument = file.type === 'application/msword' || 
-                       file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-                       file.type === 'application/vnd.ms-excel' ||
-                       file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-
-    if (!isImage && !isPDF && !isDocument) {
-      setFormError('Please upload a valid file (Images, PDF, DOC, DOCX, XLS, XLSX).');
+    if (file.type !== 'application/pdf') {
+      setFormError('Please upload a valid PDF file.');
       return;
     }
 
@@ -153,15 +137,15 @@ export default function CertificatePage() {
       URL.revokeObjectURL(previewUrl);
     }
 
-    setFile(file);
-    setFileName(file.name);
-    setFileType(isImage ? 'image' : (isPDF ? 'pdf' : 'document'));
+    setPdfFile(file);
     setPreviewUrl(URL.createObjectURL(file));
+    setFileName(file.name);
+    setFileSize((file.size / (1024 * 1024)).toFixed(1) + ' MB');
   };
 
   const validateForm = () => {
     if (!previewUrl) {
-      setFormError('Please select a file.');
+      setFormError('Please select a PDF file.');
       return false;
     }
     return true;
@@ -175,10 +159,9 @@ export default function CertificatePage() {
 
     const newCertificate = {
       id: Date.now(),
-      title: title.trim(),
-      fileUrl: previewUrl,
-      fileType: fileType,
       fileName: fileName,
+      fileUrl: previewUrl,
+      fileSize: fileSize,
       createdAt: new Date().toISOString().split('T')[0]
     };
 
@@ -190,11 +173,10 @@ export default function CertificatePage() {
 
   const handleEdit = (certificate) => {
     setEditingId(certificate.id);
-    setTitle(certificate.title);
     setPreviewUrl(certificate.fileUrl);
     setFileName(certificate.fileName);
-    setFileType(certificate.fileType);
-    setFile(null);
+    setFileSize(certificate.fileSize);
+    setPdfFile(null);
     setFormError('');
     setIsModalOpen(true);
   };
@@ -207,12 +189,11 @@ export default function CertificatePage() {
 
     const updatedCertificates = certificates.map(cert =>
       cert.id === editingId
-        ? { 
-            ...cert, 
-            title: title.trim(), 
+        ? {
+            ...cert,
+            fileName: fileName,
             fileUrl: previewUrl,
-            fileType: fileType,
-            fileName: fileName
+            fileSize: fileSize
           }
         : cert
     );
@@ -247,11 +228,10 @@ export default function CertificatePage() {
     if (previewUrl && previewUrl.startsWith('blob:')) {
       URL.revokeObjectURL(previewUrl);
     }
-    setFile(null);
+    setPdfFile(null);
     setPreviewUrl('');
-    setTitle('');
     setFileName('');
-    setFileType('');
+    setFileSize('');
     setEditingId(null);
     setFormError('');
     if (fileInputRef.current) {
@@ -264,195 +244,135 @@ export default function CertificatePage() {
     resetForm();
   };
 
-  // Get file icon based on type
-  const getFileIcon = (type) => {
-    switch(type) {
-      case 'image':
-        return <FileImage className="w-5 h-5" />;
-      case 'pdf':
-        return <FileText className="w-5 h-5" />;
-      case 'document':
-        return <FileArchive className="w-5 h-5" />;
-      default:
-        return <File className="w-5 h-5" />;
-    }
+  // Format date
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
   };
 
-  // Get file type label
-  const getFileTypeLabel = (type) => {
-    switch(type) {
-      case 'image':
-        return 'Image';
-      case 'pdf':
-        return 'PDF';
-      case 'document':
-        return 'Document';
-      default:
-        return 'File';
-    }
-  };
-
-  // Render file preview
-  const renderFilePreview = (certificate) => {
-    if (certificate.fileType === 'image') {
-      return (
-        <img 
-          src={certificate.fileUrl} 
-          alt={certificate.title || 'Certificate'} 
-          className="w-full h-full object-contain"
-          onError={(e) => {
-            e.target.src = 'https://via.placeholder.com/400x400/FF6B6B/FFFFFF?text=No+Image';
-          }}
-        />
-      );
-    } else {
-      return (
-        <div className="flex flex-col items-center justify-center w-full h-full bg-gray-50">
-          {getFileIcon(certificate.fileType)}
-          <p className="text-xs text-gray-500 mt-2 text-center px-2 truncate max-w-full">
-            {certificate.fileName}
-          </p>
-          <span className="text-[10px] text-gray-400 mt-1 px-2 py-0.5 bg-gray-200 rounded-full">
-            {getFileTypeLabel(certificate.fileType)}
-          </span>
-        </div>
-      );
-    }
+  // Get file icon
+  const getFileIcon = () => {
+    return <FileText className="w-12 h-12 text-red-500" />;
   };
 
   return (
-    <div className="min-h-screen w-full bg-slate-900 flex items-start justify-center p-3 md:p-6 relative overflow-hidden">
-
-      <div className="w-full max-w-7xl bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20 relative z-10">
+    <div className="min-h-screen w-full  flex items-start justify-center p-4 md:p-8 relative overflow-hidden">
+    
+      <div className="w-full max-w-7xl bg-slate-700 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20 relative z-10 min-h-[85vh] flex flex-col">
         {/* Table */}
-        <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 shadow-xl overflow-hidden flex flex-col justify-between">
-          
+        <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 shadow-xl overflow-hidden flex flex-col flex-1">
           {/* Table Header with Search */}
-          <div className="p-4 border-b border-red-200/50">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <div className="flex items-center gap-3">
-                <Award className="w-5 h-5 text-red-600" />
-                <span className="font-semibold text-gray-800">Certificates</span>
-                <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-medium">
-                  {filteredCertificates.length}
-                </span>
+          <div className="flex flex-wrap justify-between items-center p-5 border-b border-red-200/50 gap-3 bg-white/50">
+            <div className="flex items-center gap-3">
+              <Award className="w-5 h-5 text-red-600" />
+              <span className="font-semibold text-gray-800 text-base">Certificates</span>
+              <span className="text-xs bg-red-100 text-red-700 px-2.5 py-1 rounded-full font-medium">
+                {filteredCertificates.length}
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search certificates..."
+                  className="w-56 md:w-64 pl-9 pr-4 py-2.5 text-sm text-gray-800 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 bg-white/80"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
-              <div className="flex items-center gap-3 w-full sm:w-auto">
-                <div className="relative flex-1 sm:flex-none">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search certificates..."
-                    className="w-full sm:w-64 pl-9 pr-4 py-2 text-sm text-gray-800 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 bg-white/80"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-                <button
-                  onClick={() => {
-                    resetForm();
-                    setIsModalOpen(true);
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-all duration-300 whitespace-nowrap"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add Certificate
-                </button>
-              </div>
+              <button
+                onClick={() => {
+                  resetForm();
+                  setIsModalOpen(true);
+                }}
+                className="flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-all duration-300 whitespace-nowrap"
+              >
+                <Plus className="w-4 h-4" />
+                Add Certificate
+              </button>
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-red-50/50 border-b border-red-200/50 text-gray-700 font-semibold uppercase text-xs tracking-wider">
-                  <th className="px-6 py-4 w-[120px]">File</th>
-                  <th className="px-6 py-4 min-w-[150px]">Title</th>
-                  <th className="px-6 py-4 w-[120px] text-center">Type</th>
-                  <th className="px-6 py-4 w-[160px] text-center">Created Date</th>
-                  <th className="px-6 py-4 w-[160px] text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-red-100/50">
-                {currentCertificates.length === 0 ? (
-                  <tr>
-                    <td colSpan="5" className="text-center py-16">
-                      <Award className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-                      <p className="font-medium text-gray-500 text-base">No certificates found</p>
-                      <p className="text-sm text-gray-400 mt-1">Try adjusting your search or add a new certificate</p>
-                    </td>
-                  </tr>
-                ) : (
-                  currentCertificates.map((certificate) => (
-                    <tr key={certificate.id} className="hover:bg-red-50/30 transition-colors duration-150">
-                      <td className="px-6 py-4">
-                        <div className="w-16 h-16 rounded-lg overflow-hidden border border-red-200 shadow-sm bg-white flex items-center justify-center p-1.5">
-                          {renderFilePreview(certificate)}
+          {/* Certificate Grid View */}
+          <div className="p-6 flex-1 bg-white/30">
+            {currentCertificates.length === 0 ? (
+              <div className="text-center py-20">
+                <Award className="w-20 h-20 mx-auto text-gray-300 mb-4" />
+                <p className="font-medium text-gray-500 text-lg">No certificates found</p>
+                <p className="text-sm text-gray-400 mt-1">Try adjusting your search or add a new certificate</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-5">
+                {currentCertificates.map((cert) => (
+                  <div key={cert.id} className="group relative">
+                    {/* Certificate Card */}
+                    <div className="bg-white rounded-xl overflow-hidden border border-red-200/30 shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                      {/* PDF Icon Container */}
+                      <div className="relative p-8 bg-gradient-to-br from-red-50 to-red-100/30 flex flex-col items-center justify-center h-48">
+                        <div className="w-20 h-20 bg-red-100 rounded-2xl flex items-center justify-center mb-3">
+                          <FileText className="w-10 h-10 text-red-600" />
                         </div>
-                      </td>
-                      
-                      <td className="px-6 py-4">
-                        {certificate.title ? (
-                          <span className="font-semibold text-gray-800 block text-base">{certificate.title}</span>
-                        ) : (
-                          <span className="text-xs italic text-gray-400 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200">
-                            Untitled Certificate
-                          </span>
-                        )}
-                        <p className="text-[10px] text-gray-400 truncate max-w-[150px]">{certificate.fileName}</p>
-                      </td>
-
-                      <td className="px-6 py-4 text-center">
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium ${
-                          certificate.fileType === 'image' ? 'bg-blue-100 text-blue-700 border-blue-200' :
-                          certificate.fileType === 'pdf' ? 'bg-red-100 text-red-700 border-red-200' :
-                          'bg-purple-100 text-purple-700 border-purple-200'
-                        }`}>
-                          {getFileIcon(certificate.fileType)}
-                          {getFileTypeLabel(certificate.fileType)}
-                        </span>
-                      </td>
-
-                      <td className="px-6 py-4 text-gray-600 font-medium text-center text-sm">
-                        {certificate.createdAt}
-                      </td>
-
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-2">
+                        <p className="text-sm font-medium text-gray-700 text-center truncate w-full px-2">
+                          {cert.fileName}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">{cert.fileSize}</p>
+                        
+                        {/* ID Badge */}
+                        <div className="absolute top-2 left-2 bg-black/70 text-white text-[10px] px-2.5 py-1 rounded-full backdrop-blur-sm font-medium">
+                          #{cert.id}
+                        </div>
+                        
+                        {/* Action Buttons - Appear on Hover */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
                           <button 
-                            onClick={() => handleView(certificate)}
+                            onClick={() => handleView(cert)}
                             title="View" 
-                            className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                            className="p-2.5 bg-white hover:bg-white text-gray-600 hover:text-red-600 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-110"
                           >
-                            <Eye className="w-4.5 h-4.5" />
+                            <Eye className="w-4 h-4" />
                           </button>
                           <button 
-                            onClick={() => handleEdit(certificate)}
+                            onClick={() => handleEdit(cert)}
                             title="Edit" 
-                            className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                            className="p-2.5 bg-white hover:bg-white text-gray-600 hover:text-red-600 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-110"
                           >
-                            <Edit2 className="w-4.5 h-4.5" />
+                            <Edit2 className="w-4 h-4" />
                           </button>
                           <button 
-                            onClick={() => handleDelete(certificate.id)}
+                            onClick={() => handleDelete(cert.id)}
                             disabled={isDeleting}
                             title="Delete" 
-                            className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200 disabled:opacity-50"
+                            className="p-2.5 bg-white hover:bg-white text-gray-600 hover:text-red-600 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-110 disabled:opacity-50"
                           >
-                            <Trash2 className="w-4.5 h-4.5" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                      </div>
+                      
+                      {/* Card Footer */}
+                      <div className="px-4 py-3 bg-white border-t border-red-200/30 flex justify-between items-center">
+                        <span className="text-[11px] text-gray-500 font-medium">
+                          PDF Document
+                        </span>
+                        <span className="text-[11px] text-gray-400">
+                          {formatDate(cert.createdAt)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Pagination */}
           {filteredCertificates.length > 0 && (
-            <div className="px-6 py-4 border-t border-red-200/50 flex flex-col sm:flex-row justify-between items-center gap-4 bg-red-50/30">
+            <div className="px-5 py-4 border-t border-red-200/50 flex flex-col sm:flex-row justify-between items-center gap-3 bg-red-50/30">
               <span className="font-medium text-gray-600 text-sm">
                 Showing <span className="text-gray-800 font-bold">{indexOfFirstItem + 1}</span> to{' '}
                 <span className="text-gray-800 font-bold">
@@ -465,7 +385,7 @@ export default function CertificatePage() {
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="p-2 rounded-lg border border-red-200/50 bg-white text-gray-600 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+                  className="p-2 rounded-lg border border-red-200/50 bg-white text-gray-500 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
                   aria-label="Previous page"
                 >
                   <ChevronLeft className="w-4 h-4" />
@@ -491,7 +411,7 @@ export default function CertificatePage() {
                       className={`w-9 h-9 rounded-lg text-sm font-bold transition-all duration-200 ${
                         isSelected
                           ? 'bg-red-600 text-white shadow-md'
-                          : 'bg-white border border-red-200/50 text-gray-700 hover:bg-red-50 hover:border-red-300'
+                          : 'bg-white border border-red-200/50 text-gray-600 hover:bg-red-50 hover:border-red-300'
                       }`}
                       aria-label={`Go to page ${pageNum}`}
                     >
@@ -503,7 +423,7 @@ export default function CertificatePage() {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="p-2 rounded-lg border border-red-200/50 bg-white text-gray-600 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+                  className="p-2 rounded-lg border border-red-200/50 bg-white text-gray-500 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
                   aria-label="Next page"
                 >
                   <ChevronRight className="w-4 h-4" />
@@ -519,7 +439,7 @@ export default function CertificatePage() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={closeModal}>
           <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl border border-red-200" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                 {editingId ? (
                   <>
                     <Edit2 className="w-5 h-5 text-red-600" />
@@ -541,7 +461,7 @@ export default function CertificatePage() {
             </div>
 
             {formError && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2 text-red-700 text-sm">
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2 text-red-600 text-sm">
                 <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                 <span>{formError}</span>
               </div>
@@ -550,27 +470,16 @@ export default function CertificatePage() {
             <form onSubmit={editingId ? handleUpdateCertificate : handleCreateCertificate} className="space-y-4 text-sm">
               {/* File Upload */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
-                  Certificate File * <span className="font-normal text-gray-400">(Image, PDF, DOC, DOCX, XLS, XLSX)</span>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">
+                  PDF File *
                 </label>
                 {previewUrl ? (
-                  <div className="relative w-full h-48 rounded-lg overflow-hidden border-2 border-red-200 shadow-sm bg-white flex items-center justify-center p-4">
-                    {fileType === 'image' ? (
-                      <img 
-                        key={previewUrl}
-                        src={previewUrl} 
-                        alt="Preview" 
-                        className="w-full h-full object-contain" 
-                      />
-                    ) : (
-                      <div className="flex flex-col items-center justify-center">
-                        {getFileIcon(fileType)}
-                        <p className="text-sm font-medium text-gray-700 mt-2">{fileName}</p>
-                        <span className="text-xs text-gray-400 mt-1 px-2 py-0.5 bg-gray-100 rounded-full">
-                          {getFileTypeLabel(fileType)}
-                        </span>
-                      </div>
-                    )}
+                  <div className="relative w-full rounded-lg overflow-hidden border-2 border-red-200 shadow-sm bg-gray-50 flex flex-col items-center justify-center p-6 h-48">
+                    <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mb-3">
+                      <FileText className="w-8 h-8 text-red-600" />
+                    </div>
+                    <p className="text-sm font-medium text-gray-700 text-center">{fileName}</p>
+                    <p className="text-xs text-gray-400 mt-1">{fileSize}</p>
                     <button
                       type="button"
                       onClick={() => {
@@ -578,9 +487,9 @@ export default function CertificatePage() {
                           URL.revokeObjectURL(previewUrl);
                         }
                         setPreviewUrl('');
-                        setFile(null);
+                        setPdfFile(null);
                         setFileName('');
-                        setFileType('');
+                        setFileSize('');
                         if (fileInputRef.current) {
                           fileInputRef.current.value = '';
                         }
@@ -591,15 +500,15 @@ export default function CertificatePage() {
                     </button>
                   </div>
                 ) : (
-                  <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-red-300 rounded-lg cursor-pointer hover:bg-red-50 transition-all duration-200 hover:border-red-500">
-                    <Upload className="w-10 h-10 text-red-400 mb-2" />
-                    <span className="text-sm font-medium text-gray-700">Click to upload file</span>
-                    <span className="text-xs text-gray-400 mt-1">Images, PDF, DOC, DOCX, XLS, XLSX</span>
-                    <span className="text-xs text-gray-400">Max size: 10MB</span>
+                  <label className="flex flex-col items-center justify-center w-full rounded-lg border-2 border-dashed border-red-300 cursor-pointer hover:bg-red-50 transition-all duration-200 hover:border-red-500 h-48 p-4">
+                    <Upload className="w-12 h-12 text-red-400 mb-2" />
+                    <span className="text-sm font-medium text-gray-700">Click to upload PDF</span>
+                    <span className="text-xs text-gray-400 mt-1">PDF files up to 10MB</span>
+                    <span className="text-xs text-red-400 mt-2">Only PDF format accepted</span>
                     <input 
                       ref={fileInputRef}
                       type="file" 
-                      accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" 
+                      accept=".pdf,application/pdf" 
                       className="hidden" 
                       onChange={handleFileChange} 
                     />
@@ -607,35 +516,17 @@ export default function CertificatePage() {
                 )}
               </div>
 
-              {/* Title */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
-                  Certificate Title <span className="font-normal text-gray-400">(Optional)</span>
-                </label>
-                <input 
-                  type="text" 
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. ISO 9001:2015 Quality Management"
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
-                  maxLength={100}
-                />
-                <div className="text-xs text-gray-400 mt-1 text-right">
-                  {title.length}/100
-                </div>
-              </div>
-
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="flex-1 py-2.5 border border-gray-200 rounded-lg font-semibold text-gray-600 hover:bg-gray-50 transition-all duration-200"
+                  className="flex-1 py-2.5 border border-gray-200 rounded-lg font-semibold text-gray-600 text-sm hover:bg-gray-50 transition-all duration-200"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all duration-300"
+                  className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold text-sm transition-all duration-300"
                 >
                   {editingId ? 'Update Certificate' : 'Save Certificate'}
                 </button>
@@ -651,9 +542,9 @@ export default function CertificatePage() {
           setIsViewModalOpen(false);
           setViewingCertificate(null);
         }}>
-          <div className="bg-white rounded-xl w-full max-w-lg p-6 shadow-xl border border-red-200" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <div className="bg-white rounded-xl w-full max-w-2xl p-6 shadow-xl border border-red-200" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                 <Award className="w-5 h-5 text-red-600" />
                 Certificate Details
               </h3>
@@ -669,46 +560,40 @@ export default function CertificatePage() {
             </div>
 
             <div className="space-y-5">
-              {/* File Preview */}
-              <div className="w-full h-64 rounded-lg overflow-hidden border-2 border-red-200 shadow-md bg-white flex items-center justify-center p-6">
-                {viewingCertificate.fileType === 'image' ? (
-                  <img 
-                    src={viewingCertificate.fileUrl} 
-                    alt={viewingCertificate.title || 'Certificate'} 
-                    className="w-full h-full object-contain"
-                    onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/400x400/FF6B6B/FFFFFF?text=No+Image';
-                    }}
-                  />
-                ) : (
-                  <div className="flex flex-col items-center justify-center">
-                    {getFileIcon(viewingCertificate.fileType)}
-                    <p className="text-sm font-medium text-gray-700 mt-3">{viewingCertificate.fileName}</p>
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium mt-2 ${
-                      viewingCertificate.fileType === 'pdf' ? 'bg-red-100 text-red-700 border-red-200' :
-                      'bg-purple-100 text-purple-700 border-purple-200'
-                    }`}>
-                      {getFileTypeLabel(viewingCertificate.fileType)}
-                    </span>
-                    <a 
-                      href={viewingCertificate.fileUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="mt-3 text-sm text-red-600 hover:text-red-700 font-medium underline"
-                    >
-                      Download File
-                    </a>
-                  </div>
-                )}
+              {/* PDF Preview */}
+              <div className="w-full rounded-lg overflow-hidden border-2 border-red-200 shadow-md bg-gray-50 flex flex-col items-center justify-center p-8 h-80">
+                <div className="w-24 h-24 bg-red-100 rounded-3xl flex items-center justify-center mb-4">
+                  <FileText className="w-12 h-12 text-red-600" />
+                </div>
+                <p className="text-base font-semibold text-gray-800 text-center">{viewingCertificate.fileName}</p>
+                <p className="text-sm text-gray-500 mt-1">{viewingCertificate.fileSize}</p>
+                <div className="flex gap-3 mt-4">
+                  <a 
+                    href={viewingCertificate.fileUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-all duration-300"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download PDF
+                  </a>
+                  <a 
+                    href={viewingCertificate.fileUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-600 hover:bg-gray-50 rounded-lg text-sm font-medium transition-all duration-300"
+                  >
+                    <Eye className="w-4 h-4" />
+                    View PDF
+                  </a>
+                </div>
               </div>
-              
+
               {/* Details */}
-              <div className="space-y-4 bg-red-50/50 p-4 rounded-lg border border-red-200/50">
+              <div className="space-y-3 bg-red-50/50 p-4 rounded-lg border border-red-200/50">
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Title</p>
-                  <p className="text-base font-semibold text-gray-800 mt-1">
-                    {viewingCertificate.title || <span className="text-gray-400 italic">Untitled Certificate</span>}
-                  </p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Certificate ID</p>
+                  <p className="text-base font-semibold text-gray-800 mt-1">#{viewingCertificate.id}</p>
                 </div>
 
                 <div>
@@ -717,25 +602,13 @@ export default function CertificatePage() {
                 </div>
 
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">File Type</p>
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium mt-1 ${
-                    viewingCertificate.fileType === 'image' ? 'bg-blue-100 text-blue-700 border-blue-200' :
-                    viewingCertificate.fileType === 'pdf' ? 'bg-red-100 text-red-700 border-red-200' :
-                    'bg-purple-100 text-purple-700 border-purple-200'
-                  }`}>
-                    {getFileIcon(viewingCertificate.fileType)}
-                    {getFileTypeLabel(viewingCertificate.fileType)}
-                  </span>
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">File Size</p>
+                  <p className="text-sm font-medium text-gray-700 mt-1">{viewingCertificate.fileSize}</p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Created Date</p>
-                  <p className="text-sm font-medium text-gray-700 mt-1">{viewingCertificate.createdAt}</p>
-                </div>
-
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Certificate ID</p>
-                  <p className="text-sm font-medium text-gray-700 mt-1">#CERT-{String(viewingCertificate.id).padStart(4, '0')}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Uploaded Date</p>
+                  <p className="text-sm font-medium text-gray-700 mt-1">{formatDate(viewingCertificate.createdAt)}</p>
                 </div>
               </div>
 
@@ -745,7 +618,7 @@ export default function CertificatePage() {
                   setIsViewModalOpen(false);
                   setViewingCertificate(null);
                 }}
-                className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all duration-300"
+                className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold text-sm transition-all duration-300"
               >
                 Close
               </button>

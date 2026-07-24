@@ -284,7 +284,7 @@ export default function FoundationPage() {
 
   return (
     <div className="min-h-screen w-full  flex items-start justify-center p-3 md:p-6">
-      <div className="w-full max-w-7xl bg-slate-900 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20">
+      <div className="w-full max-w-7xl bg-slate-700 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20">
         {/* Table */}
         <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 shadow-xl overflow-hidden flex flex-col justify-between">
           {/* Table Header with Search */}

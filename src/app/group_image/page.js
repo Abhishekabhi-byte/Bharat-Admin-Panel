@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Images, 
+  Users, 
   Eye, 
   Edit2, 
   Trash2, 
@@ -13,47 +13,58 @@ import {
   ChevronRight,
   Search,
   AlertCircle,
+  Image as ImageIcon,
   Maximize2,
-  Image as ImageIcon
+  Grid
 } from 'lucide-react';
 
-export default function GroupImagePage() {
+export default function TeamGroupImageSection() {
   const [groupImages, setGroupImages] = useState([
     {
       id: 1,
-      imageUrl: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=700&h=450&fit=crop',
+      imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=400&fit=crop',
       createdAt: '2026-07-01'
     },
     {
       id: 2,
-      imageUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=700&h=450&fit=crop',
+      imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&h=400&fit=crop',
       createdAt: '2026-07-05'
     },
     {
       id: 3,
-      imageUrl: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=700&h=450&fit=crop',
+      imageUrl: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop',
       createdAt: '2026-07-06'
     },
     {
       id: 4,
-      imageUrl: 'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=700&h=450&fit=crop',
+      imageUrl: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&h=400&fit=crop',
       createdAt: '2026-07-07'
     },
     {
       id: 5,
-      imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=700&h=450&fit=crop',
+      imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=400&fit=crop',
       createdAt: '2026-07-08'
     },
     {
       id: 6,
-      imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=700&h=450&fit=crop',
+      imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&h=400&fit=crop',
       createdAt: '2026-07-09'
+    },
+    {
+      id: 7,
+      imageUrl: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop',
+      createdAt: '2026-07-10'
+    },
+    {
+      id: 8,
+      imageUrl: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&h=400&fit=crop',
+      createdAt: '2026-07-11'
     },
   ]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
-  const itemsPerPage = 5;
+  const itemsPerPage = 6;
 
   // Form state
   const [imageFile, setImageFile] = useState(null);
@@ -217,19 +228,28 @@ export default function GroupImagePage() {
     resetForm();
   };
 
+  // Format date
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
+
   return (
-    <div className="min-h-screen w-full bg-slate-900 flex items-start justify-center p-3 md:p-6 relative overflow-hidden">
-      {/* Side Blur Effect - Left */}
-    
-      <div className="w-full max-w-7xl bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20 relative z-10">
+    <div className="min-h-screen w-full  flex items-start justify-center p-4 md:p-8 relative overflow-hidden">
+     
+      <div className="w-full max-w-7xl bg-slate-700 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20 relative z-10 min-h-[85vh] flex flex-col">
         {/* Table */}
-        <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 shadow-xl overflow-hidden flex flex-col justify-between">
+        <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 shadow-xl overflow-hidden flex flex-col flex-1">
           {/* Table Header with Search */}
-          <div className="flex flex-wrap justify-between items-center p-4 border-b border-red-200/50 gap-3">
+          <div className="flex flex-wrap justify-between items-center p-5 border-b border-red-200/50 gap-3 bg-white/50">
             <div className="flex items-center gap-3">
-              <Images className="w-5 h-5 text-red-600" />
-              <span className="font-semibold text-gray-800">Group Images</span>
-              <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-medium">
+              <Users className="w-5 h-5 text-red-600" />
+              <span className="font-semibold text-gray-800 text-base">Team Group Images</span>
+              <span className="text-xs bg-red-100 text-red-700 px-2.5 py-1 rounded-full font-medium">
                 {filteredImages.length}
               </span>
             </div>
@@ -239,7 +259,7 @@ export default function GroupImagePage() {
                 <input
                   type="text"
                   placeholder="Search images..."
-                  className="w-40 md:w-52 pl-9 pr-4 py-2 text-sm text-gray-800 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 bg-white/80"
+                  className="w-56 md:w-64 pl-9 pr-4 py-2.5 text-sm text-gray-800 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 bg-white/80"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -249,7 +269,7 @@ export default function GroupImagePage() {
                   resetForm();
                   setIsModalOpen(true);
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-all duration-300 whitespace-nowrap"
+                className="flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-all duration-300 whitespace-nowrap"
               >
                 <Plus className="w-4 h-4" />
                 Add Image
@@ -257,99 +277,103 @@ export default function GroupImagePage() {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-red-50/50 border-b border-red-200/50 text-gray-700 font-semibold uppercase text-xs tracking-wider">
-                  <th className="px-4 py-3 w-[140px]">Image</th>
-                  <th className="px-4 py-3 w-[140px] text-center">Created Date</th>
-                  <th className="px-4 py-3 w-[140px] text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-red-100/50">
-                {currentImages.length === 0 ? (
-                  <tr>
-                    <td colSpan="3" className="text-center py-12">
-                      <Images className="w-10 h-10 mx-auto text-gray-300 mb-2" />
-                      <p className="font-medium text-gray-500 text-sm">No images found</p>
-                      <p className="text-xs text-gray-400 mt-1">Try adjusting your search or add a new image</p>
-                    </td>
-                  </tr>
-                ) : (
-                  currentImages.map((image) => (
-                    <tr key={image.id} className="hover:bg-red-50/30 transition-colors duration-150">
-                      <td className="px-4 py-3">
-                        <div className="relative w-[130px] h-[84px] rounded-lg overflow-hidden border border-red-200 shadow-sm" style={{ aspectRatio: '700/450' }}>
-                          <img 
-                            src={image.imageUrl} 
-                            alt={`Group Image ${image.id}`} 
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              e.target.src = 'https://via.placeholder.com/700x450/FF6B6B/FFFFFF?text=No+Image';
-                            }}
-                          />
-                          <div className="absolute bottom-0.5 right-0.5 bg-black/60 text-white text-[8px] px-1 py-0.5 rounded">
-                            700×450
-                          </div>
+          {/* Image Grid View */}
+          <div className="p-6 flex-1 bg-white/30">
+            {currentImages.length === 0 ? (
+              <div className="text-center py-20">
+                <Users className="w-20 h-20 mx-auto text-gray-300 mb-4" />
+                <p className="font-medium text-gray-500 text-lg">No images found</p>
+                <p className="text-sm text-gray-400 mt-1">Try adjusting your search or add a new image</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-5">
+                {currentImages.map((image) => (
+                  <div key={image.id} className="group relative">
+                    {/* Image Card */}
+                    <div className="bg-white rounded-xl overflow-hidden border border-red-200/30 shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                      {/* Image Container */}
+                      <div className="relative aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100/30 overflow-hidden">
+                        <img 
+                          src={image.imageUrl} 
+                          alt={`Team Image ${image.id}`} 
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          onError={(e) => {
+                            e.target.src = 'https://via.placeholder.com/600x400/FF6B6B/FFFFFF?text=No+Image';
+                          }}
+                        />
+                        
+                        {/* ID Badge */}
+                        <div className="absolute top-3 left-3 bg-black/70 text-white text-[10px] px-2.5 py-1 rounded-full backdrop-blur-sm font-medium">
+                          #{image.id}
                         </div>
-                      </td>
-
-                      <td className="px-4 py-3 text-gray-500 font-medium text-center text-xs">
-                        {image.createdAt}
-                      </td>
-
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex justify-end gap-1.5">
+                        
+                        {/* Date Badge */}
+                        <div className="absolute bottom-3 left-3 bg-black/60 text-white text-[10px] px-2.5 py-1 rounded-full backdrop-blur-sm">
+                          {formatDate(image.createdAt)}
+                        </div>
+                        
+                        {/* Action Buttons - Appear on Hover */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
                           <button 
                             onClick={() => handleView(image)}
                             title="View" 
-                            className="p-1.5 text-gray-400 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                            className="p-2.5 bg-white hover:bg-white text-gray-600 hover:text-red-600 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-110"
                           >
-                            <Eye className="w-3.5 h-3.5" />
+                            <Eye className="w-4 h-4" />
                           </button>
                           <button 
                             onClick={() => handleEdit(image)}
                             title="Edit" 
-                            className="p-1.5 text-gray-400 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                            className="p-2.5 bg-white hover:bg-white text-gray-600 hover:text-red-600 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-110"
                           >
-                            <Edit2 className="w-3.5 h-3.5" />
+                            <Edit2 className="w-4 h-4" />
                           </button>
                           <button 
                             onClick={() => handleDelete(image.id)}
                             disabled={isDeleting}
                             title="Delete" 
-                            className="p-1.5 text-gray-400 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200 disabled:opacity-50"
+                            className="p-2.5 bg-white hover:bg-white text-gray-600 hover:text-red-600 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-110 disabled:opacity-50"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                      </div>
+                      
+                      {/* Card Footer */}
+                      <div className="px-4 py-3 bg-white border-t border-red-200/30 flex justify-between items-center">
+                        <span className="text-[11px] text-gray-500 font-medium">
+                          Team Image #{image.id}
+                        </span>
+                        <span className="text-[11px] text-gray-400">
+                          {formatDate(image.createdAt)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Pagination */}
           {filteredImages.length > 0 && (
-            <div className="px-4 py-3 border-t border-red-200/50 flex flex-col sm:flex-row justify-between items-center gap-3 bg-red-50/30">
-              <span className="font-medium text-gray-500 text-xs">
-                Showing <span className="text-gray-700 font-bold">{indexOfFirstItem + 1}</span> to{' '}
-                <span className="text-gray-700 font-bold">
+            <div className="px-5 py-4 border-t border-red-200/50 flex flex-col sm:flex-row justify-between items-center gap-3 bg-red-50/30">
+              <span className="font-medium text-gray-600 text-sm">
+                Showing <span className="text-gray-800 font-bold">{indexOfFirstItem + 1}</span> to{' '}
+                <span className="text-gray-800 font-bold">
                   {Math.min(indexOfLastItem, filteredImages.length)}
                 </span>{' '}
-                of <span className="text-gray-700 font-bold">{filteredImages.length}</span> images
+                of <span className="text-gray-800 font-bold">{filteredImages.length}</span> images
               </span>
 
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="p-1.5 rounded-lg border border-red-200/50 bg-white text-gray-500 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+                  className="p-2 rounded-lg border border-red-200/50 bg-white text-gray-500 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
                   aria-label="Previous page"
                 >
-                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <ChevronLeft className="w-4 h-4" />
                 </button>
 
                 {Array.from({ length: Math.min(totalPages, 5) }, (_, index) => {
@@ -369,7 +393,7 @@ export default function GroupImagePage() {
                     <button
                       key={pageNum}
                       onClick={() => handlePageChange(pageNum)}
-                      className={`w-7 h-7 rounded-lg text-xs font-bold transition-all duration-200 ${
+                      className={`w-9 h-9 rounded-lg text-sm font-bold transition-all duration-200 ${
                         isSelected
                           ? 'bg-red-600 text-white shadow-md'
                           : 'bg-white border border-red-200/50 text-gray-600 hover:bg-red-50 hover:border-red-300'
@@ -384,10 +408,10 @@ export default function GroupImagePage() {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="p-1.5 rounded-lg border border-red-200/50 bg-white text-gray-500 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+                  className="p-2 rounded-lg border border-red-200/50 bg-white text-gray-500 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
                   aria-label="Next page"
                 >
-                  <ChevronRight className="w-3.5 h-3.5" />
+                  <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -398,53 +422,50 @@ export default function GroupImagePage() {
       {/* Add/Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={closeModal}>
-          <div className="bg-white rounded-xl w-full max-w-md p-5 shadow-xl border border-red-200" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="text-base font-bold text-gray-800 flex items-center gap-2">
+          <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl border border-red-200" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                 {editingId ? (
                   <>
-                    <Edit2 className="w-4 h-4 text-red-600" />
+                    <Edit2 className="w-5 h-5 text-red-600" />
                     Edit Image
                   </>
                 ) : (
                   <>
-                    <Plus className="w-4 h-4 text-red-600" />
+                    <Plus className="w-5 h-5 text-red-600" />
                     Upload Image
                   </>
                 )}
               </h3>
               <button 
                 onClick={closeModal} 
-                className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
+                className="p-2 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
             {formError && (
-              <div className="mb-3 p-2.5 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2 text-red-600 text-xs">
-                <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2 text-red-600 text-sm">
+                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                 <span>{formError}</span>
               </div>
             )}
 
-            <form onSubmit={editingId ? handleUpdateImage : handleCreateImage} className="space-y-3 text-sm">
-              {/* Image Upload with Fixed Dimensions */}
+            <form onSubmit={editingId ? handleUpdateImage : handleCreateImage} className="space-y-4 text-sm">
+              {/* Image Upload */}
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-600 mb-1.5">
-                  Image * <span className="font-normal text-gray-400">(700×450px recommended)</span>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">
+                  Group Image *
                 </label>
                 {previewUrl ? (
-                  <div className="relative w-full rounded-lg overflow-hidden border-2 border-red-200 shadow-sm" style={{ aspectRatio: '700/450' }}>
+                  <div className="relative w-full rounded-lg overflow-hidden border-2 border-red-200 shadow-sm bg-gray-50 aspect-[4/3]">
                     <img 
                       key={previewUrl}
                       src={previewUrl} 
                       alt="Preview" 
                       className="w-full h-full object-cover" 
                     />
-                    <div className="absolute bottom-2 left-2 bg-black/70 text-white text-[10px] px-2 py-0.5 rounded">
-                      700 × 450
-                    </div>
                     <button
                       type="button"
                       onClick={() => {
@@ -457,17 +478,17 @@ export default function GroupImagePage() {
                           fileInputRef.current.value = '';
                         }
                       }}
-                      className="absolute top-2 right-2 p-1 bg-red-600 text-white rounded-full shadow-lg hover:bg-red-700 transition-all"
+                      className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded-full shadow-lg hover:bg-red-700 transition-all"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
                 ) : (
-                  <label className="flex flex-col items-center justify-center w-full rounded-lg border-2 border-dashed border-red-300 cursor-pointer hover:bg-red-50 transition-all duration-200 hover:border-red-500" style={{ aspectRatio: '700/450' }}>
-                    <Upload className="w-10 h-10 text-red-400 mb-1.5" />
+                  <label className="flex flex-col items-center justify-center w-full rounded-lg border-2 border-dashed border-red-300 cursor-pointer hover:bg-red-50 transition-all duration-200 hover:border-red-500 aspect-[4/3] p-4">
+                    <Upload className="w-12 h-12 text-red-400 mb-2" />
                     <span className="text-sm font-medium text-gray-700">Click to upload image</span>
                     <span className="text-xs text-gray-400 mt-1">PNG, JPG, GIF, WEBP up to 10MB</span>
-                    <span className="text-[10px] text-gray-400">Recommended: 700×450 pixels</span>
+                    <span className="text-xs text-gray-400">Recommended: 4:3 ratio</span>
                     <input 
                       ref={fileInputRef}
                       type="file" 
@@ -479,17 +500,17 @@ export default function GroupImagePage() {
                 )}
               </div>
 
-              <div className="flex gap-2 pt-1">
+              <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="flex-1 py-2 border border-gray-200 rounded-lg font-semibold text-gray-600 text-sm hover:bg-gray-50 transition-all duration-200"
+                  className="flex-1 py-2.5 border border-gray-200 rounded-lg font-semibold text-gray-600 text-sm hover:bg-gray-50 transition-all duration-200"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold text-sm transition-all duration-300"
+                  className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold text-sm transition-all duration-300"
                 >
                   {editingId ? 'Update Image' : 'Save Image'}
                 </button>
@@ -505,10 +526,10 @@ export default function GroupImagePage() {
           setIsViewModalOpen(false);
           setViewingImage(null);
         }}>
-          <div className="bg-white rounded-xl w-full max-w-xl p-5 shadow-xl border border-red-200" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-base font-bold text-gray-800 flex items-center gap-2">
-                <Images className="w-4 h-4 text-red-600" />
+          <div className="bg-white rounded-xl w-full max-w-2xl p-6 shadow-xl border border-red-200" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                <Users className="w-5 h-5 text-red-600" />
                 Image Details
               </h3>
               <button 
@@ -516,41 +537,43 @@ export default function GroupImagePage() {
                   setIsViewModalOpen(false);
                   setViewingImage(null);
                 }}
-                className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
+                className="p-2 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-4">
-              {/* Image with Fixed Dimensions */}
-              <div className="w-full rounded-lg overflow-hidden border-2 border-red-200 shadow-md" style={{ aspectRatio: '700/450' }}>
+            <div className="space-y-5">
+              {/* Image */}
+              <div className="w-full rounded-lg overflow-hidden border-2 border-red-200 shadow-md bg-gray-50 aspect-[4/3]">
                 <img 
                   src={viewingImage.imageUrl} 
-                  alt={`Group Image ${viewingImage.id}`} 
+                  alt={`Team Image ${viewingImage.id}`} 
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/700x450/FF6B6B/FFFFFF?text=No+Image';
+                    e.target.src = 'https://via.placeholder.com/600x400/FF6B6B/FFFFFF?text=No+Image';
                   }}
                 />
               </div>
-              
-              {/* Dimensions Info */}
-              <div className="flex items-center gap-2 justify-center text-xs text-gray-500 bg-gray-50 px-3 py-1 rounded-lg">
-                <Maximize2 className="w-3.5 h-3.5" />
-                <span>700 × 450 pixels</span>
-              </div>
 
               {/* Details */}
-              <div className="space-y-3 bg-red-50/50 p-3 rounded-lg border border-red-200/50">
+              <div className="space-y-3 bg-red-50/50 p-4 rounded-lg border border-red-200/50">
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Image ID</p>
-                  <p className="text-sm font-semibold text-gray-700 mt-0.5">#{viewingImage.id}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Image ID</p>
+                  <p className="text-base font-semibold text-gray-800 mt-1">#{viewingImage.id}</p>
                 </div>
 
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Created Date</p>
-                  <p className="text-sm font-medium text-gray-600 mt-0.5">{viewingImage.createdAt}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Created Date</p>
+                  <p className="text-sm font-medium text-gray-700 mt-1">{formatDate(viewingImage.createdAt)}</p>
+                </div>
+
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Dimensions</p>
+                  <p className="text-sm font-medium text-gray-700 mt-1 flex items-center gap-2">
+                    <Maximize2 className="w-4 h-4 text-gray-400" />
+                    Team Group Image
+                  </p>
                 </div>
               </div>
 
@@ -560,7 +583,7 @@ export default function GroupImagePage() {
                   setIsViewModalOpen(false);
                   setViewingImage(null);
                 }}
-                className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold text-sm transition-all duration-300"
+                className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold text-sm transition-all duration-300"
               >
                 Close
               </button>

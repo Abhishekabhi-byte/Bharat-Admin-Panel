@@ -35,7 +35,9 @@ import {
   Lightbulb,
   Gauge,
   Power,
-  Contact
+  Contact,
+  BadgeInfo,
+  FileText
 } from 'lucide-react';
 
 import { PiCertificateFill } from "react-icons/pi";
@@ -52,18 +54,20 @@ const homeSections = [
 
 // About sections 
 const aboutSections = [
+  { name: "About-Head", path: "/About_Head", icon: BadgeInfo },
   { name: "Certificate", path: "/certificate", icon: PiCertificateFill },
   { name: "Leadership Team", path: "/Team_image", icon: UserRoundCog },
   { name: "Team Group Image", path: "/group_image", icon: Images },
 ];
 
-// Service sub-sections with portfolio showcase
+// Service sub-sections with portfolio showcase and head section
 const serviceSections = [ 
   { 
     name: "Power Substation", 
     path: "/services/power-substation", 
     icon: Power,
     portfolioPath: "/Powersubstation/portfolio",
+    headPath: "/Powersubstation_head",
     hasDropdown: true
   },
   { 
@@ -71,6 +75,7 @@ const serviceSections = [
     path: "/services/domestic-wiring", 
     icon: Zap,
     portfolioPath: "/Service/Domestic-wiring/portfolio",
+    headPath: "/Service/Domesticwiring_head",
     hasDropdown: true
   },
   { 
@@ -78,6 +83,7 @@ const serviceSections = [
     path: "/services/transformer-service", 
     icon: Gauge,
     portfolioPath: "/Service/Transformer/portfolio",
+    headPath: "/Service/Transformer_head",
     hasDropdown: true
   },
   { 
@@ -85,6 +91,7 @@ const serviceSections = [
     path: "/services/servo-stabilizers", 
     icon: ShieldCheck,
     portfolioPath: "/Service/Servo-Stabilizers/portfolio",
+    headPath: "/Service/Servo-Stabilizers_head",
     hasDropdown: true
   },
   { 
@@ -92,6 +99,7 @@ const serviceSections = [
     path: "/services/cable-laying", 
     icon: Cable,
     portfolioPath: "/Service/Cable-Laying/portfolio",
+    headPath: "/Service/Cable-Laying/cable-head",
     hasDropdown: true
   },
   { 
@@ -99,6 +107,7 @@ const serviceSections = [
     path: "/services/facade-lighting", 
     icon: Lightbulb,
     portfolioPath: "/Service/Facade-Lighting/portfolio",
+    headPath: "/Service/Facadelighting_head",
     hasDropdown: true
   },
   { 
@@ -327,7 +336,9 @@ export default function Sidebar() {
             <div className="ml-4 mt-1 space-y-1 border-l border-slate-800 pl-3">
               {serviceSections.map((service) => {
                 const Icon = service.icon;
-                const isActive = isPathActive(service.path) || (service.portfolioPath && isPathActive(service.portfolioPath));
+                const isActive = isPathActive(service.path) || 
+                                (service.portfolioPath && isPathActive(service.portfolioPath)) ||
+                                (service.headPath && isPathActive(service.headPath));
                 const isOpen = openServices[service.name] || false;
 
                 // For Contact Form - no dropdown
@@ -351,7 +362,7 @@ export default function Sidebar() {
                   );
                 }
 
-                // For services with dropdown (Portfolio Showcase)
+                // For services with dropdown (Portfolio Showcase & Head Section)
                 return (
                   <div key={service.name}>
                     <button
@@ -373,23 +384,44 @@ export default function Sidebar() {
                       )}
                     </button>
 
-                    {/* Sub-dropdown for Portfolio Showcase */}
-                    {isOpen && service.portfolioPath && (
+                    {/* Sub-dropdown for Portfolio Showcase & Head Section */}
+                    {isOpen && (
                       <div className="ml-6 mt-1 space-y-1 border-l border-slate-700 pl-3">
-                        <Link
-                          href={service.portfolioPath}
-                          className={`flex items-center justify-between px-4 py-2 rounded-lg transition-all duration-200 group ${
-                            isPathActive(service.portfolioPath)
-                              ? 'bg-indigo-600 text-white font-semibold shadow-md shadow-indigo-950/50'
-                              : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-100'
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <FolderOpen className={`w-3.5 h-3.5 transition-transform duration-200 group-hover:scale-105 ${isPathActive(service.portfolioPath) ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'}`} />
-                            <span className="text-[11px] tracking-wide">Portfolio Showcase</span>
-                          </div>
-                          {isPathActive(service.portfolioPath) && <span className="text-[10px] text-white/80">▶</span>}
-                        </Link>
+                        {/* Head Section */}
+                        {service.headPath && (
+                          <Link
+                            href={service.headPath}
+                            className={`flex items-center justify-between px-4 py-2 rounded-lg transition-all duration-200 group ${
+                              isPathActive(service.headPath)
+                                ? 'bg-indigo-600 text-white font-semibold shadow-md shadow-indigo-950/50'
+                                : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-100'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <FileText className={`w-3.5 h-3.5 transition-transform duration-200 group-hover:scale-105 ${isPathActive(service.headPath) ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'}`} />
+                              <span className="text-[11px] tracking-wide">{service.name} Head</span>
+                            </div>
+                            {isPathActive(service.headPath) && <span className="text-[10px] text-white/80">▶</span>}
+                          </Link>
+                        )}
+                        
+                        {/* Portfolio Showcase */}
+                        {service.portfolioPath && (
+                          <Link
+                            href={service.portfolioPath}
+                            className={`flex items-center justify-between px-4 py-2 rounded-lg transition-all duration-200 group ${
+                              isPathActive(service.portfolioPath)
+                                ? 'bg-indigo-600 text-white font-semibold shadow-md shadow-indigo-950/50'
+                                : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-100'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <FolderOpen className={`w-3.5 h-3.5 transition-transform duration-200 group-hover:scale-105 ${isPathActive(service.portfolioPath) ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'}`} />
+                              <span className="text-[11px] tracking-wide">Portfolio Showcase</span>
+                            </div>
+                            {isPathActive(service.portfolioPath) && <span className="text-[10px] text-white/80">▶</span>}
+                          </Link>
+                        )}
                       </div>
                     )}
                   </div>

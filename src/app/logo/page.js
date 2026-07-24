@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Image as ImageIcon, 
+  Diamond, 
   Eye, 
   Edit2, 
   Trash2, 
@@ -12,56 +12,60 @@ import {
   ChevronLeft, 
   ChevronRight,
   Search,
+  AlertCircle,
   Building2,
-  AlertCircle
+  LayoutGrid
 } from 'lucide-react';
 
-export default function LogoPage() {
+export default function BrandLogoSection() {
   const [logos, setLogos] = useState([
-    { 
-      id: 1, 
-      title: 'Company Main Logo', 
-      imageUrl: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=250',
+    {
+      id: 1,
+      imageUrl: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=200&h=200&fit=crop',
       createdAt: '2026-07-01'
     },
-    { 
-      id: 2, 
-      title: '', 
-      imageUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=250',
+    {
+      id: 2,
+      imageUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=200&h=200&fit=crop',
       createdAt: '2026-07-05'
     },
-    { 
-      id: 3, 
-      title: 'Brand Icon', 
-      imageUrl: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=250',
+    {
+      id: 3,
+      imageUrl: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=200&h=200&fit=crop',
       createdAt: '2026-07-06'
     },
-    { 
-      id: 4, 
-      title: 'Secondary Logo', 
-      imageUrl: 'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=250',
+    {
+      id: 4,
+      imageUrl: 'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=200&h=200&fit=crop',
       createdAt: '2026-07-07'
     },
-    { 
-      id: 5, 
-      title: '', 
-      imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=250',
+    {
+      id: 5,
+      imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=200&h=200&fit=crop',
       createdAt: '2026-07-08'
     },
-    { 
-      id: 6, 
-      title: 'Partner Logo', 
-      imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=250',
+    {
+      id: 6,
+      imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=200&h=200&fit=crop',
       createdAt: '2026-07-09'
+    },
+    {
+      id: 7,
+      imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=200&h=200&fit=crop',
+      createdAt: '2026-07-10'
+    },
+    {
+      id: 8,
+      imageUrl: 'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=200&h=200&fit=crop',
+      createdAt: '2026-07-11'
     },
   ]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
-  const itemsPerPage = 5;
+  const itemsPerPage = 8;
 
   // Form state
-  const [title, setTitle] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
   const [formError, setFormError] = useState('');
@@ -76,7 +80,7 @@ export default function LogoPage() {
 
   // Filter logos based on search
   const filteredLogos = logos.filter(logo =>
-    logo.title.toLowerCase().includes(searchTerm.toLowerCase())
+    logo.id.toString().includes(searchTerm.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredLogos.length / itemsPerPage);
@@ -146,7 +150,6 @@ export default function LogoPage() {
 
     const newLogo = {
       id: Date.now(),
-      title: title.trim(),
       imageUrl: previewUrl,
       createdAt: new Date().toISOString().split('T')[0]
     };
@@ -159,7 +162,6 @@ export default function LogoPage() {
 
   const handleEdit = (logo) => {
     setEditingId(logo.id);
-    setTitle(logo.title);
     setPreviewUrl(logo.imageUrl);
     setImageFile(null);
     setFormError('');
@@ -174,10 +176,9 @@ export default function LogoPage() {
 
     const updatedLogos = logos.map(logo =>
       logo.id === editingId
-        ? { 
-            ...logo, 
-            title: title.trim(), 
-            imageUrl: previewUrl 
+        ? {
+            ...logo,
+            imageUrl: previewUrl
           }
         : logo
     );
@@ -214,7 +215,6 @@ export default function LogoPage() {
     }
     setImageFile(null);
     setPreviewUrl('');
-    setTitle('');
     setEditingId(null);
     setFormError('');
     if (fileInputRef.current) {
@@ -227,27 +227,38 @@ export default function LogoPage() {
     resetForm();
   };
 
+  // Format date
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
+
   return (
-    <div className="min-h-screen w-full  flex items-start justify-center p-3 md:p-6">
-      <div className="w-full max-w-7xl bg-slate-900 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20">
+    <div className="min-h-screen w-full  flex items-start justify-center p-4 md:p-8 relative overflow-hidden">
+ 
+      <div className="w-full max-w-7xl bg-slate-700 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20 relative z-10 min-h-[85vh] flex flex-col">
         {/* Table */}
-        <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 shadow-xl overflow-hidden flex flex-col justify-between">
+        <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 shadow-xl overflow-hidden flex flex-col flex-1">
           {/* Table Header with Search */}
-          <div className="flex justify-between items-center p-4 border-b border-red-200/50">
+          <div className="flex flex-wrap justify-between items-center p-5 border-b border-red-200/50 gap-3 bg-white/50">
             <div className="flex items-center gap-3">
-              <Building2 className="w-5 h-5 text-red-600" />
-              <span className="font-semibold text-gray-800">Logos</span>
-              <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-medium">
+              <Diamond className="w-5 h-5 text-red-600" />
+              <span className="font-semibold text-gray-800 text-base">Brand Logos</span>
+              <span className="text-xs bg-red-100 text-red-700 px-2.5 py-1 rounded-full font-medium">
                 {filteredLogos.length}
               </span>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search logos..."
-                  className="w-48 md:w-64 pl-9 pr-4 py-2 text-sm text-gray-800 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 bg-white/80"
+                  className="w-56 md:w-64 pl-9 pr-4 py-2.5 text-sm text-gray-800 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 bg-white/80"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -257,7 +268,7 @@ export default function LogoPage() {
                   resetForm();
                   setIsModalOpen(true);
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-all duration-300 whitespace-nowrap"
+                className="flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-all duration-300 whitespace-nowrap"
               >
                 <Plus className="w-4 h-4" />
                 Add Logo
@@ -265,83 +276,82 @@ export default function LogoPage() {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-red-50/50 border-b border-red-200/50 text-gray-700 font-semibold uppercase text-xs tracking-wider">
-                  <th className="px-6 py-4 w-[100px] text-center">Logo</th>
-              
-                  <th className="px-6 py-4 w-[160px] text-center">Created Date</th>
-                  <th className="px-6 py-4 w-[160px] text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-red-100/50">
-                {currentLogos.length === 0 ? (
-                  <tr>
-                    <td colSpan="4" className="text-center py-16">
-                      <Building2 className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-                      <p className="font-medium text-gray-500 text-base">No logos found</p>
-                      <p className="text-sm text-gray-400 mt-1">Try adjusting your search or add a new logo</p>
-                    </td>
-                  </tr>
-                ) : (
-                  currentLogos.map((logo) => (
-                    <tr key={logo.id} className="hover:bg-red-50/30 transition-colors duration-150">
-                      <td className="px-6 py-4">
-                        <div className="w-16 h-16 rounded-lg overflow-hidden border border-red-200 shadow-sm bg-white flex items-center justify-center p-1.5 mx-auto">
-                          <img 
-                            src={logo.imageUrl} 
-                            alt={logo.title || 'Logo'} 
-                            className="w-full h-full object-contain"
-                            onError={(e) => {
-                              e.target.src = 'https://via.placeholder.com/100x100/FF6B6B/FFFFFF?text=No+Image';
-                            }}
-                          />
+          {/* Logo Grid View - Corporate Style */}
+          <div className="p-6 flex-1 bg-white/30">
+            {currentLogos.length === 0 ? (
+              <div className="text-center py-20">
+                <Diamond className="w-20 h-20 mx-auto text-gray-300 mb-4" />
+                <p className="font-medium text-gray-500 text-lg">No logos found</p>
+                <p className="text-sm text-gray-400 mt-1">Try adjusting your search or add a new logo</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-5">
+                {currentLogos.map((logo) => (
+                  <div key={logo.id} className="group relative">
+                    {/* Logo Card */}
+                    <div className="bg-white rounded-xl overflow-hidden border border-red-200/30 shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                      {/* Logo Image Container - No fixed aspect ratio */}
+                      <div className="relative p-6 bg-gradient-to-br from-gray-50 to-gray-100/30 flex items-center justify-center h-48">
+                        <img 
+                          src={logo.imageUrl} 
+                          alt={`Logo ${logo.id}`} 
+                          className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110"
+                          onError={(e) => {
+                            e.target.src = 'https://via.placeholder.com/200x200/FF6B6B/FFFFFF?text=No+Image';
+                          }}
+                        />
+                        
+                        {/* ID Badge */}
+                        <div className="absolute top-2 left-2 bg-black/70 text-white text-[10px] px-2.5 py-1 rounded-full backdrop-blur-sm font-medium">
+                          #{logo.id}
                         </div>
-                      </td>
-                      
-             
-
-                      <td className="px-6 py-4 text-gray-600 font-medium text-center text-sm">
-                        {logo.createdAt}
-                      </td>
-
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-2">
+                        
+                        {/* Action Buttons - Appear on Hover */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
                           <button 
                             onClick={() => handleView(logo)}
                             title="View" 
-                            className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                            className="p-2.5 bg-white hover:bg-white text-gray-600 hover:text-red-600 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-110"
                           >
-                            <Eye className="w-4.5 h-4.5" />
+                            <Eye className="w-4 h-4" />
                           </button>
                           <button 
                             onClick={() => handleEdit(logo)}
                             title="Edit" 
-                            className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                            className="p-2.5 bg-white hover:bg-white text-gray-600 hover:text-red-600 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-110"
                           >
-                            <Edit2 className="w-4.5 h-4.5" />
+                            <Edit2 className="w-4 h-4" />
                           </button>
                           <button 
                             onClick={() => handleDelete(logo.id)}
                             disabled={isDeleting}
                             title="Delete" 
-                            className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200 disabled:opacity-50"
+                            className="p-2.5 bg-white hover:bg-white text-gray-600 hover:text-red-600 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-110 disabled:opacity-50"
                           >
-                            <Trash2 className="w-4.5 h-4.5" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                      </div>
+                      
+                      {/* Card Footer */}
+                      <div className="px-4 py-3 bg-white border-t border-red-200/30 flex justify-between items-center">
+                        <span className="text-[11px] text-gray-500 font-medium">
+                          Logo #{logo.id}
+                        </span>
+                        <span className="text-[11px] text-gray-400">
+                          {formatDate(logo.createdAt)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Pagination */}
           {filteredLogos.length > 0 && (
-            <div className="px-6 py-4 border-t border-red-200/50 flex flex-col sm:flex-row justify-between items-center gap-4 bg-red-50/30">
+            <div className="px-5 py-4 border-t border-red-200/50 flex flex-col sm:flex-row justify-between items-center gap-3 bg-red-50/30">
               <span className="font-medium text-gray-600 text-sm">
                 Showing <span className="text-gray-800 font-bold">{indexOfFirstItem + 1}</span> to{' '}
                 <span className="text-gray-800 font-bold">
@@ -354,7 +364,7 @@ export default function LogoPage() {
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="p-2 rounded-lg border border-red-200/50 bg-white text-gray-600 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+                  className="p-2 rounded-lg border border-red-200/50 bg-white text-gray-500 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
                   aria-label="Previous page"
                 >
                   <ChevronLeft className="w-4 h-4" />
@@ -380,7 +390,7 @@ export default function LogoPage() {
                       className={`w-9 h-9 rounded-lg text-sm font-bold transition-all duration-200 ${
                         isSelected
                           ? 'bg-red-600 text-white shadow-md'
-                          : 'bg-white border border-red-200/50 text-gray-700 hover:bg-red-50 hover:border-red-300'
+                          : 'bg-white border border-red-200/50 text-gray-600 hover:bg-red-50 hover:border-red-300'
                       }`}
                       aria-label={`Go to page ${pageNum}`}
                     >
@@ -392,7 +402,7 @@ export default function LogoPage() {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="p-2 rounded-lg border border-red-200/50 bg-white text-gray-600 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+                  className="p-2 rounded-lg border border-red-200/50 bg-white text-gray-500 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
                   aria-label="Next page"
                 >
                   <ChevronRight className="w-4 h-4" />
@@ -408,7 +418,7 @@ export default function LogoPage() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={closeModal}>
           <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl border border-red-200" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                 {editingId ? (
                   <>
                     <Edit2 className="w-5 h-5 text-red-600" />
@@ -430,7 +440,7 @@ export default function LogoPage() {
             </div>
 
             {formError && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2 text-red-700 text-sm">
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2 text-red-600 text-sm">
                 <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                 <span>{formError}</span>
               </div>
@@ -439,11 +449,11 @@ export default function LogoPage() {
             <form onSubmit={editingId ? handleUpdateLogo : handleCreateLogo} className="space-y-4 text-sm">
               {/* Image Upload */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">
                   Logo Image *
                 </label>
                 {previewUrl ? (
-                  <div className="relative w-full h-48 rounded-lg overflow-hidden border-2 border-red-200 shadow-sm bg-white flex items-center justify-center p-4">
+                  <div className="relative w-full rounded-lg overflow-hidden border-2 border-red-200 shadow-sm bg-gray-50 flex items-center justify-center p-4 h-56">
                     <img 
                       key={previewUrl}
                       src={previewUrl} 
@@ -468,11 +478,11 @@ export default function LogoPage() {
                     </button>
                   </div>
                 ) : (
-                  <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-red-300 rounded-lg cursor-pointer hover:bg-red-50 transition-all duration-200 hover:border-red-500">
-                    <Upload className="w-10 h-10 text-red-400 mb-2" />
+                  <label className="flex flex-col items-center justify-center w-full rounded-lg border-2 border-dashed border-red-300 cursor-pointer hover:bg-red-50 transition-all duration-200 hover:border-red-500 h-56 p-4">
+                    <Upload className="w-12 h-12 text-red-400 mb-2" />
                     <span className="text-sm font-medium text-gray-700">Click to upload logo</span>
                     <span className="text-xs text-gray-400 mt-1">PNG, JPG, GIF, SVG up to 5MB</span>
-                    <span className="text-xs text-gray-400">Recommended: Transparent PNG</span>
+                    <span className="text-xs text-red-400 mt-2">Use transparent background for best results</span>
                     <input 
                       ref={fileInputRef}
                       type="file" 
@@ -484,35 +494,17 @@ export default function LogoPage() {
                 )}
               </div>
 
-              {/* Title */}
-              {/* <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
-                  Logo Title <span className="font-normal text-gray-400">(Optional)</span>
-                </label>
-                <input 
-                  type="text" 
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Company Main Logo"
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
-                  maxLength={100}
-                />
-                <div className="text-xs text-gray-400 mt-1 text-right">
-                  {title.length}/100
-                </div>
-              </div> */}
-
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="flex-1 py-2.5 border border-gray-200 rounded-lg font-semibold text-gray-600 hover:bg-gray-50 transition-all duration-200"
+                  className="flex-1 py-2.5 border border-gray-200 rounded-lg font-semibold text-gray-600 text-sm hover:bg-gray-50 transition-all duration-200"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all duration-300"
+                  className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold text-sm transition-all duration-300"
                 >
                   {editingId ? 'Update Logo' : 'Save Logo'}
                 </button>
@@ -528,10 +520,10 @@ export default function LogoPage() {
           setIsViewModalOpen(false);
           setViewingLogo(null);
         }}>
-          <div className="bg-white rounded-xl w-full max-w-lg p-6 shadow-xl border border-red-200" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-red-600" />
+          <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl border border-red-200" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                <Diamond className="w-5 h-5 text-red-600" />
                 Logo Details
               </h3>
               <button 
@@ -546,25 +538,36 @@ export default function LogoPage() {
             </div>
 
             <div className="space-y-5">
-              {/* Logo Image */}
-              <div className="w-full h-64 rounded-lg overflow-hidden border-2 border-red-200 shadow-md bg-white flex items-center justify-center p-6">
+              {/* Logo Image - No fixed aspect ratio */}
+              <div className="w-full rounded-lg overflow-hidden border-2 border-red-200 shadow-md bg-gray-50 flex items-center justify-center p-8 h-80">
                 <img 
                   src={viewingLogo.imageUrl} 
-                  alt={viewingLogo.title || 'Logo'} 
+                  alt={`Logo ${viewingLogo.id}`} 
                   className="w-full h-full object-contain"
                   onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/400x400/FF6B6B/FFFFFF?text=No+Image';
+                    e.target.src = 'https://via.placeholder.com/200x200/FF6B6B/FFFFFF?text=No+Image';
                   }}
                 />
               </div>
-              
+
               {/* Details */}
-              <div className="space-y-4 bg-red-50/50 p-4 rounded-lg border border-red-200/50">
-               
+              <div className="space-y-3 bg-red-50/50 p-4 rounded-lg border border-red-200/50">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Logo ID</p>
+                  <p className="text-base font-semibold text-gray-800 mt-1">#{viewingLogo.id}</p>
+                </div>
 
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Created Date</p>
-                  <p className="text-sm font-medium text-gray-700 mt-1">{viewingLogo.createdAt}</p>
+                  <p className="text-sm font-medium text-gray-700 mt-1">{formatDate(viewingLogo.createdAt)}</p>
+                </div>
+
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Format</p>
+                  <p className="text-sm font-medium text-gray-700 mt-1 flex items-center gap-2">
+                    <Diamond className="w-4 h-4 text-gray-400" />
+                    Transparent Background Recommended
+                  </p>
                 </div>
               </div>
 
@@ -574,7 +577,7 @@ export default function LogoPage() {
                   setIsViewModalOpen(false);
                   setViewingLogo(null);
                 }}
-                className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all duration-300"
+                className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold text-sm transition-all duration-300"
               >
                 Close
               </button>

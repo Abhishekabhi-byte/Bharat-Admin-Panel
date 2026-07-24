@@ -12,840 +12,940 @@ import {
   ChevronRight,
   Search,
   AlertCircle,
-  Calendar,
   MapPin,
   Clock,
-  Users,
-  FileText,
-  CheckCircle,
-  Building,
   DollarSign,
-  Filter
+  FileText,
+  List,
+  CheckCircle,
+  Award,
+  BadgeCheck,
+  Users,
+  User,
+  Mail,
+  Phone,
+  GraduationCap,
+  Download,
+  XCircle,
+  Clock as ClockIcon,
+  UserCheck
 } from 'lucide-react';
 
-export default function JobPostPage() {
+export default function JobManagement() {
+  // ===================== JOB POSTS STATE =====================
   const [jobs, setJobs] = useState([
     {
       id: 1,
-      jobField: 'Software Development',
-      location: 'San Francisco, CA',
-      experience: '5-8 years',
-      description: 'We are looking for a Senior Software Engineer to lead our development team and architect scalable solutions for our growing platform.',
-      workType: 'Full Time',
-      jobPostDate: '2026-07-01',
-      jobRole: 'Senior Software Engineer',
-      filter: 'Backend, Frontend, Full Stack, React, Node.js, AWS',
+      jobTitle: 'Electrical Engineer',
+      location: 'Patna, Bihar',
+      experience: '3-5 Years',
+      salary: 'Competitive',
+      jobType: 'Full Time',
+      roleOverview: 'Responsible for executing power substation and distribution network projects, leading engineering teams and ensuring safety compliance.',
+      keyResponsibilities: '• Design, layout, and install electrical control panels and substation structures.\n• Coordinate with clients, electricity boards, and project heads to resolve technical discrepancies.\n• Conduct electrical load flow studies and circuit layout calculations.\n• Supervise on-site electrical installations and ensure strictly 100% safety standards.',
+      requirements: '• B.Tech / B.E. in Electrical Engineering from a recognized institution.\n• 3+ years of experience in high-tension (HT) switchyard or grid erection.\n• Knowledge of electrical safety standards and regulations.',
+      status: 'Active',
       createdAt: '2026-07-01'
     },
     {
       id: 2,
-      jobField: 'Marketing',
-      location: 'New York, NY',
-      experience: '3-5 years',
-      description: 'Seeking a creative Digital Marketing Manager to drive our online presence and lead marketing campaigns across multiple channels.',
-      workType: 'Full Time',
-      jobPostDate: '2026-07-05',
-      jobRole: 'Digital Marketing Manager',
-      filter: 'SEO, SEM, Social Media, Google Analytics, Content Strategy',
+      jobTitle: 'Senior Electrical Engineer',
+      location: 'Delhi, India',
+      experience: '5-8 Years',
+      salary: '₹12-18 LPA',
+      jobType: 'Full Time',
+      roleOverview: 'Lead electrical engineering projects and mentor junior engineers.',
+      keyResponsibilities: '• Lead project teams and ensure timely delivery.\n• Review technical designs and specifications.\n• Coordinate with clients and stakeholders.',
+      requirements: '• B.Tech in Electrical Engineering.\n• 5+ years of experience.\n• Strong leadership skills.',
+      status: 'Active',
       createdAt: '2026-07-05'
-    },
-    {
-      id: 3,
-      jobField: 'Design',
-      location: 'Remote',
-      experience: '2-4 years',
-      description: 'Looking for a talented UI/UX Designer to create beautiful and intuitive user interfaces for our web and mobile applications.',
-      workType: 'Part Time',
-      jobPostDate: '2026-07-10',
-      jobRole: 'UI/UX Designer',
-      filter: 'Figma, Adobe XD, Sketch, Prototyping, User Research',
-      createdAt: '2026-07-10'
-    },
-    {
-      id: 4,
-      jobField: 'Human Resources',
-      location: 'Chicago, IL',
-      experience: '4-6 years',
-      description: 'HR Manager needed to oversee recruitment, employee relations, and organizational development initiatives.',
-      workType: 'Full Time',
-      jobPostDate: '2026-07-15',
-      jobRole: 'HR Manager',
-      filter: 'Recruitment, Employee Relations, Performance Management, HRIS',
-      createdAt: '2026-07-15'
-    },
-    {
-      id: 5,
-      jobField: 'Sales',
-      location: 'Los Angeles, CA',
-      experience: '2-3 years',
-      description: 'Join our sales team as a Sales Representative to drive revenue growth and build strong client relationships.',
-      workType: 'Contract',
-      jobPostDate: '2026-07-18',
-      jobRole: 'Sales Representative',
-      filter: 'B2B Sales, CRM, Cold Calling, Negotiation, Lead Generation',
-      createdAt: '2026-07-18'
-    },
-    {
-      id: 6,
-      jobField: 'Finance',
-      location: 'Boston, MA',
-      experience: '6-10 years',
-      description: 'Seeking an experienced Financial Analyst to provide strategic financial insights and support business decision-making.',
-      workType: 'Full Time',
-      jobPostDate: '2026-07-20',
-      jobRole: 'Senior Financial Analyst',
-      filter: 'Financial Modeling, Excel, Forecasting, Budgeting, CPA',
-      createdAt: '2026-07-20'
-    },
-    {
-      id: 7,
-      jobField: 'Operations',
-      location: 'Dallas, TX',
-      experience: '3-5 years',
-      description: 'Operations Manager needed to optimize processes, improve efficiency, and lead operational excellence initiatives.',
-      workType: 'Part Time',
-      jobPostDate: '2026-07-22',
-      jobRole: 'Operations Manager',
-      filter: 'Process Improvement, Six Sigma, Supply Chain, Lean Management',
-      createdAt: '2026-07-22'
     },
   ]);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterKeyword, setFilterKeyword] = useState('');
+  // ===================== JOB APPLICATIONS STATE =====================
+  const [applications, setApplications] = useState([
+    {
+      id: 1,
+      fullName: 'Rajesh Kumar',
+      email: 'rajesh.kumar@email.com',
+      phone: '+91 98765 43210',
+      position: 'Electrical Engineer',
+      experience: '5 Years',
+      qualification: 'B.Tech Electrical',
+      resumeUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+      status: 'Pending',
+      viewed: false,
+      appliedDate: '2026-07-20'
+    },
+    {
+      id: 2,
+      fullName: 'Priya Sharma',
+      email: 'priya.sharma@email.com',
+      phone: '+91 87654 32109',
+      position: 'Senior Electrical Engineer',
+      experience: '8 Years',
+      qualification: 'M.Tech Electrical',
+      resumeUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+      status: 'Shortlisted',
+      viewed: true,
+      appliedDate: '2026-07-19'
+    },
+    {
+      id: 3,
+      fullName: 'Amit Patel',
+      email: 'amit.patel@email.com',
+      phone: '+91 76543 21098',
+      position: 'Junior Electrical Engineer',
+      experience: '2 Years',
+      qualification: 'B.Tech Electrical',
+      resumeUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+      status: 'Rejected',
+      viewed: true,
+      appliedDate: '2026-07-18'
+    },
+    {
+      id: 4,
+      fullName: 'Sneha Reddy',
+      email: 'sneha.reddy@email.com',
+      phone: '+91 65432 10987',
+      position: 'Electrical Engineer',
+      experience: '4 Years',
+      qualification: 'B.E. Electrical',
+      resumeUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+      status: 'Hired',
+      viewed: true,
+      appliedDate: '2026-07-17'
+    },
+    {
+      id: 5,
+      fullName: 'Vikram Singh',
+      email: 'vikram.singh@email.com',
+      phone: '+91 54321 09876',
+      position: 'Site Electrical Engineer',
+      experience: '3 Years',
+      qualification: 'Diploma Electrical',
+      resumeUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+      status: 'Pending',
+      viewed: false,
+      appliedDate: '2026-07-16'
+    },
+  ]);
+
+  // ===================== JOB POSTS PAGINATION =====================
+  const [jobCurrentPage, setJobCurrentPage] = useState(1);
+  const [jobSearchTerm, setJobSearchTerm] = useState('');
   const itemsPerPage = 5;
 
-  // Form state
-  const [jobField, setJobField] = useState('');
-  const [location, setLocation] = useState('');
-  const [experience, setExperience] = useState('');
-  const [description, setDescription] = useState('');
-  const [workType, setWorkType] = useState('');
-  const [jobPostDate, setJobPostDate] = useState('');
-  const [jobRole, setJobRole] = useState('');
-  const [filter, setFilter] = useState('');
-  const [formError, setFormError] = useState('');
+  // ===================== APPLICATIONS PAGINATION =====================
+  const [appCurrentPage, setAppCurrentPage] = useState(1);
+  const [appSearchTerm, setAppSearchTerm] = useState('');
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [viewingJob, setViewingJob] = useState(null);
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  // Work type options
-  const workTypeOptions = ['Full Time', 'Part Time', 'Contract'];
-
-  // Filter jobs based on search and filter keyword
-  const filteredJobs = jobs.filter(job => {
-    const matchesSearch = 
-      job.jobField.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.jobRole.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.workType.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesFilter = 
-      !filterKeyword || 
-      (job.filter && job.filter.toLowerCase().includes(filterKeyword.toLowerCase()));
-    
-    return matchesSearch && matchesFilter;
+  // ===================== JOB POSTS FORM STATE =====================
+  const [jobFormData, setJobFormData] = useState({
+    jobTitle: '',
+    location: '',
+    experience: '',
+    salary: '',
+    jobType: '',
+    roleOverview: '',
+    keyResponsibilities: '',
+    requirements: '',
+    status: 'Active'
   });
+  const [jobFormError, setJobFormError] = useState('');
+  const [isJobModalOpen, setIsJobModalOpen] = useState(false);
+  const [editingJobId, setEditingJobId] = useState(null);
+  const [viewingJob, setViewingJob] = useState(null);
+  const [isJobViewModalOpen, setIsJobViewModalOpen] = useState(false);
+  const [isDeletingJob, setIsDeletingJob] = useState(false);
 
-  const totalPages = Math.ceil(filteredJobs.length / itemsPerPage);
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentJobs = filteredJobs.slice(indexOfFirstItem, indexOfLastItem);
+  // ===================== APPLICATIONS FORM STATE =====================
+  const [appFormData, setAppFormData] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    position: '',
+    experience: '',
+    qualification: '',
+    status: 'Pending'
+  });
+  const [appFormError, setAppFormError] = useState('');
+  const [isAppModalOpen, setIsAppModalOpen] = useState(false);
+  const [editingAppId, setEditingAppId] = useState(null);
+  const [viewingApplication, setViewingApplication] = useState(null);
+  const [isAppViewModalOpen, setIsAppViewModalOpen] = useState(false);
+  const [isDeletingApp, setIsDeletingApp] = useState(false);
 
-  // Reset to page 1 when search or filter changes
+  // ===================== OPTIONS =====================
+  const jobTypeOptions = ['Full Time', 'Part Time', 'Internship', 'Contract'];
+  const statusOptions = ['Pending', 'Shortlisted', 'Rejected', 'Hired'];
+  const jobStatusOptions = ['Active', 'Inactive'];
+
+  // ===================== JOB POSTS FILTER =====================
+  const filteredJobs = jobs.filter(job =>
+    job.jobTitle.toLowerCase().includes(jobSearchTerm.toLowerCase()) ||
+    job.location.toLowerCase().includes(jobSearchTerm.toLowerCase()) ||
+    job.jobType.toLowerCase().includes(jobSearchTerm.toLowerCase())
+  );
+
+  const jobTotalPages = Math.ceil(filteredJobs.length / itemsPerPage);
+  const jobIndexOfLastItem = jobCurrentPage * itemsPerPage;
+  const jobIndexOfFirstItem = jobIndexOfLastItem - itemsPerPage;
+  const currentJobs = filteredJobs.slice(jobIndexOfFirstItem, jobIndexOfLastItem);
+
   useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, filterKeyword]);
+    setJobCurrentPage(1);
+  }, [jobSearchTerm]);
 
-  const handlePageChange = (pageNumber) => {
-    if (pageNumber >= 1 && pageNumber <= totalPages) {
-      setCurrentPage(pageNumber);
-    }
-  };
+  // ===================== APPLICATIONS FILTER =====================
+  const filteredApplications = applications.filter(app =>
+    app.fullName.toLowerCase().includes(appSearchTerm.toLowerCase()) ||
+    app.email.toLowerCase().includes(appSearchTerm.toLowerCase()) ||
+    app.position.toLowerCase().includes(appSearchTerm.toLowerCase()) ||
+    app.status.toLowerCase().includes(appSearchTerm.toLowerCase())
+  );
 
-  const validateForm = () => {
-    if (!jobField.trim()) {
-      setFormError('Please enter the job field/domain.');
-      return false;
-    }
-    if (!location.trim()) {
-      setFormError('Please enter the job location.');
-      return false;
-    }
-    if (!experience.trim()) {
-      setFormError('Please enter the experience requirement.');
-      return false;
-    }
-    if (!description.trim()) {
-      setFormError('Please enter the job description.');
-      return false;
-    }
-    if (!workType) {
-      setFormError('Please select the work type.');
-      return false;
-    }
-    if (!jobPostDate) {
-      setFormError('Please select the job post date.');
-      return false;
-    }
-    if (!jobRole.trim()) {
-      setFormError('Please enter the job role.');
-      return false;
-    }
+  const appTotalPages = Math.ceil(filteredApplications.length / itemsPerPage);
+  const appIndexOfLastItem = appCurrentPage * itemsPerPage;
+  const appIndexOfFirstItem = appIndexOfLastItem - itemsPerPage;
+  const currentApplications = filteredApplications.slice(appIndexOfFirstItem, appIndexOfLastItem);
+
+  useEffect(() => {
+    setAppCurrentPage(1);
+  }, [appSearchTerm]);
+
+  // ===================== JOB POSTS CRUD =====================
+  const validateJobForm = () => {
+    const { jobTitle, location, experience, salary, jobType, roleOverview, keyResponsibilities, requirements } = jobFormData;
+    if (!jobTitle.trim()) { setJobFormError('Please enter the job title.'); return false; }
+    if (!location.trim()) { setJobFormError('Please enter the location.'); return false; }
+    if (!experience.trim()) { setJobFormError('Please enter the experience.'); return false; }
+    if (!salary.trim()) { setJobFormError('Please enter the salary.'); return false; }
+    if (!jobType) { setJobFormError('Please select the job type.'); return false; }
+    if (!roleOverview.trim()) { setJobFormError('Please enter the role overview.'); return false; }
+    if (!keyResponsibilities.trim()) { setJobFormError('Please enter the key responsibilities.'); return false; }
+    if (!requirements.trim()) { setJobFormError('Please enter the requirements.'); return false; }
     return true;
   };
 
   const handleCreateJob = (e) => {
     e.preventDefault();
-    setFormError('');
-
-    if (!validateForm()) return;
+    setJobFormError('');
+    if (!validateJobForm()) return;
 
     const newJob = {
       id: Date.now(),
-      jobField: jobField.trim(),
-      location: location.trim(),
-      experience: experience.trim(),
-      description: description.trim(),
-      workType: workType,
-      jobPostDate: jobPostDate,
-      jobRole: jobRole.trim(),
-      filter: filter.trim(),
+      ...jobFormData,
+      jobTitle: jobFormData.jobTitle.trim(),
+      location: jobFormData.location.trim(),
+      experience: jobFormData.experience.trim(),
+      salary: jobFormData.salary.trim(),
+      roleOverview: jobFormData.roleOverview.trim(),
+      keyResponsibilities: jobFormData.keyResponsibilities.trim(),
+      requirements: jobFormData.requirements.trim(),
       createdAt: new Date().toISOString().split('T')[0]
     };
 
     setJobs([newJob, ...jobs]);
-    setCurrentPage(1);
-    resetForm();
-    setIsModalOpen(false);
+    setJobCurrentPage(1);
+    resetJobForm();
+    setIsJobModalOpen(false);
   };
 
-  const handleEdit = (job) => {
-    setEditingId(job.id);
-    setJobField(job.jobField);
-    setLocation(job.location);
-    setExperience(job.experience);
-    setDescription(job.description);
-    setWorkType(job.workType);
-    setJobPostDate(job.jobPostDate);
-    setJobRole(job.jobRole);
-    setFilter(job.filter || '');
-    setFormError('');
-    setIsModalOpen(true);
+  const handleEditJob = (job) => {
+    setEditingJobId(job.id);
+    setJobFormData({
+      jobTitle: job.jobTitle,
+      location: job.location,
+      experience: job.experience,
+      salary: job.salary,
+      jobType: job.jobType,
+      roleOverview: job.roleOverview,
+      keyResponsibilities: job.keyResponsibilities,
+      requirements: job.requirements,
+      status: job.status
+    });
+    setJobFormError('');
+    setIsJobModalOpen(true);
   };
 
   const handleUpdateJob = (e) => {
     e.preventDefault();
-    setFormError('');
-
-    if (!validateForm()) return;
+    setJobFormError('');
+    if (!validateJobForm()) return;
 
     const updatedJobs = jobs.map(job =>
-      job.id === editingId
+      job.id === editingJobId
         ? {
             ...job,
-            jobField: jobField.trim(),
-            location: location.trim(),
-            experience: experience.trim(),
-            description: description.trim(),
-            workType: workType,
-            jobPostDate: jobPostDate,
-            jobRole: jobRole.trim(),
-            filter: filter.trim()
+            ...jobFormData,
+            jobTitle: jobFormData.jobTitle.trim(),
+            location: jobFormData.location.trim(),
+            experience: jobFormData.experience.trim(),
+            salary: jobFormData.salary.trim(),
+            roleOverview: jobFormData.roleOverview.trim(),
+            keyResponsibilities: jobFormData.keyResponsibilities.trim(),
+            requirements: jobFormData.requirements.trim()
           }
         : job
     );
 
     setJobs(updatedJobs);
-    resetForm();
-    setIsModalOpen(false);
-    setEditingId(null);
+    resetJobForm();
+    setIsJobModalOpen(false);
+    setEditingJobId(null);
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this job posting? This action cannot be undone.')) {
-      setIsDeleting(true);
+  const handleDeleteJob = (id) => {
+    if (window.confirm('Are you sure you want to delete this job post?')) {
+      setIsDeletingJob(true);
       setTimeout(() => {
         const updatedJobs = jobs.filter(job => job.id !== id);
         setJobs(updatedJobs);
         const newTotalPages = Math.ceil(updatedJobs.length / itemsPerPage);
-        if (currentPage > newTotalPages && newTotalPages > 0) {
-          setCurrentPage(newTotalPages);
+        if (jobCurrentPage > newTotalPages && newTotalPages > 0) {
+          setJobCurrentPage(newTotalPages);
         }
-        setIsDeleting(false);
+        setIsDeletingJob(false);
       }, 300);
     }
   };
 
-  const handleView = (job) => {
+  const handleViewJob = (job) => {
     setViewingJob(job);
-    setIsViewModalOpen(true);
+    setIsJobViewModalOpen(true);
   };
 
-  const resetForm = () => {
-    setJobField('');
-    setLocation('');
-    setExperience('');
-    setDescription('');
-    setWorkType('');
-    setJobPostDate('');
-    setJobRole('');
-    setFilter('');
-    setEditingId(null);
-    setFormError('');
+  const resetJobForm = () => {
+    setJobFormData({
+      jobTitle: '',
+      location: '',
+      experience: '',
+      salary: '',
+      jobType: '',
+      roleOverview: '',
+      keyResponsibilities: '',
+      requirements: '',
+      status: 'Active'
+    });
+    setEditingJobId(null);
+    setJobFormError('');
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    resetForm();
+  const closeJobModal = () => {
+    setIsJobModalOpen(false);
+    resetJobForm();
   };
 
-  // Truncate description to 40 characters
-  const truncateDescription = (text, maxLength = 40) => {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
+  // ===================== APPLICATIONS CRUD =====================
+  const validateAppForm = () => {
+    const { fullName, email, phone, position, experience, qualification } = appFormData;
+    if (!fullName.trim()) { setAppFormError('Please enter the full name.'); return false; }
+    if (!email.trim()) { setAppFormError('Please enter the email address.'); return false; }
+    if (!email.includes('@') || !email.includes('.')) { setAppFormError('Please enter a valid email address.'); return false; }
+    if (!phone.trim()) { setAppFormError('Please enter the phone number.'); return false; }
+    if (!position.trim()) { setAppFormError('Please enter the position.'); return false; }
+    if (!experience.trim()) { setAppFormError('Please enter the experience.'); return false; }
+    if (!qualification.trim()) { setAppFormError('Please enter the qualification.'); return false; }
+    return true;
   };
 
-  // Get work type color
-  const getWorkTypeColor = (type) => {
-    switch(type) {
-      case 'Full Time':
-        return 'bg-green-100 text-green-700 border-green-200';
-      case 'Part Time':
-        return 'bg-blue-100 text-blue-700 border-blue-200';
-      case 'Contract':
-        return 'bg-purple-100 text-purple-700 border-purple-200';
-      default:
-        return 'bg-gray-100 text-gray-700 border-gray-200';
+  const handleEditApplication = (app) => {
+    setEditingAppId(app.id);
+    setAppFormData({
+      fullName: app.fullName,
+      email: app.email,
+      phone: app.phone,
+      position: app.position,
+      experience: app.experience,
+      qualification: app.qualification,
+      status: app.status
+    });
+    setAppFormError('');
+    setIsAppModalOpen(true);
+  };
+
+  const handleUpdateApplication = (e) => {
+    e.preventDefault();
+    setAppFormError('');
+    if (!validateAppForm()) return;
+
+    const updatedApplications = applications.map(app =>
+      app.id === editingAppId
+        ? {
+            ...app,
+            ...appFormData,
+            fullName: appFormData.fullName.trim(),
+            email: appFormData.email.trim(),
+            phone: appFormData.phone.trim(),
+            position: appFormData.position.trim(),
+            experience: appFormData.experience.trim(),
+            qualification: appFormData.qualification.trim()
+          }
+        : app
+    );
+
+    setApplications(updatedApplications);
+    resetAppForm();
+    setIsAppModalOpen(false);
+    setEditingAppId(null);
+  };
+
+  const handleDeleteApplication = (id) => {
+    if (window.confirm('Are you sure you want to delete this application?')) {
+      setIsDeletingApp(true);
+      setTimeout(() => {
+        const updatedApplications = applications.filter(app => app.id !== id);
+        setApplications(updatedApplications);
+        const newTotalPages = Math.ceil(updatedApplications.length / itemsPerPage);
+        if (appCurrentPage > newTotalPages && newTotalPages > 0) {
+          setAppCurrentPage(newTotalPages);
+        }
+        setIsDeletingApp(false);
+      }, 300);
     }
   };
 
+  const handleViewApplication = (app) => {
+    if (!app.viewed) {
+      const updatedApplications = applications.map(a =>
+        a.id === app.id ? { ...a, viewed: true } : a
+      );
+      setApplications(updatedApplications);
+    }
+    setViewingApplication(app);
+    setIsAppViewModalOpen(true);
+  };
+
+  const resetAppForm = () => {
+    setAppFormData({
+      fullName: '',
+      email: '',
+      phone: '',
+      position: '',
+      experience: '',
+      qualification: '',
+      status: 'Pending'
+    });
+    setEditingAppId(null);
+    setAppFormError('');
+  };
+
+  const closeAppModal = () => {
+    setIsAppModalOpen(false);
+    resetAppForm();
+  };
+
+  // ===================== HELPER FUNCTIONS =====================
+  const getStatusColor = (status) => {
+    const colors = {
+      'Active': 'bg-green-100 text-green-700 border-green-200',
+      'Inactive': 'bg-red-100 text-red-700 border-red-200',
+      'Pending': 'bg-yellow-100 text-yellow-700 border-yellow-200',
+      'Shortlisted': 'bg-blue-100 text-blue-700 border-blue-200',
+      'Rejected': 'bg-red-100 text-red-700 border-red-200',
+      'Hired': 'bg-green-100 text-green-700 border-green-200'
+    };
+    return colors[status] || 'bg-gray-100 text-gray-700 border-gray-200';
+  };
+
+  const getStatusIcon = (status) => {
+    const icons = {
+      'Pending': <ClockIcon className="w-3 h-3" />,
+      'Shortlisted': <UserCheck className="w-3 h-3" />,
+      'Rejected': <XCircle className="w-3 h-3" />,
+      'Hired': <CheckCircle className="w-3 h-3" />
+    };
+    return icons[status] || null;
+  };
+
+  const getJobTypeColor = (type) => {
+    const colors = {
+      'Full Time': 'bg-blue-100 text-blue-700 border-blue-200',
+      'Part Time': 'bg-purple-100 text-purple-700 border-purple-200',
+      'Internship': 'bg-orange-100 text-orange-700 border-orange-200',
+      'Contract': 'bg-teal-100 text-teal-700 border-teal-200'
+    };
+    return colors[type] || 'bg-gray-100 text-gray-700 border-gray-200';
+  };
+
+  const formatBulletPoints = (text) => {
+    if (!text) return [];
+    return text.split('\n').filter(item => item.trim());
+  };
+
+  const truncateText = (text, maxLength = 40) => {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength) + '…';
+  };
+
+  // ===================== PAGINATION COMPONENT =====================
+  const Pagination = ({ currentPage, totalPages, onPageChange, itemsPerPage, totalItems, startIndex }) => {
+    if (totalItems === 0) return null;
+
+    return (
+      <div className="px-4 py-3 border-t border-red-200/50 flex flex-col sm:flex-row justify-between items-center gap-2 bg-red-50/30">
+        <span className="font-medium text-gray-500 text-xs">
+          Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, totalItems)} of {totalItems}
+        </span>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="p-1.5 rounded-lg border border-red-200/50 bg-white text-gray-500 hover:bg-red-50 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <ChevronLeft className="w-3.5 h-3.5" />
+          </button>
+          {Array.from({ length: Math.min(totalPages, 5) }, (_, index) => {
+            let pageNum;
+            if (totalPages <= 5) pageNum = index + 1;
+            else if (currentPage <= 3) pageNum = index + 1;
+            else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + index;
+            else pageNum = currentPage - 2 + index;
+            const isSelected = currentPage === pageNum;
+            return (
+              <button
+                key={pageNum}
+                onClick={() => onPageChange(pageNum)}
+                className={`w-7 h-7 rounded-lg text-xs font-bold transition-all ${isSelected ? 'bg-red-600 text-white shadow-md' : 'bg-white border border-red-200/50 text-gray-600 hover:bg-red-50'}`}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
+          <button
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="p-1.5 rounded-lg border border-red-200/50 bg-white text-gray-500 hover:bg-red-50 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="min-h-screen w-full  flex items-start justify-center p-3 md:p-6">
-      <div className="w-full max-w-7xl bg-slate-900 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20">
-        {/* Table */}
-        <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 shadow-xl overflow-hidden flex flex-col justify-between">
-          {/* Table Header with Search and Filter */}
-          <div className="flex flex-wrap justify-between items-center p-4 border-b border-red-200/50 gap-3">
-            <div className="flex items-center gap-3">
-              <Briefcase className="w-5 h-5 text-red-600" />
-              <span className="font-semibold text-gray-800">Job Posts</span>
-              <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-medium">
-                {filteredJobs.length}
-              </span>
+    <div className="min-h-screen w-full  flex items-start justify-center p-4 md:p-6 relative overflow-hidden">
+    
+      <div className="w-full max-w-7xl bg-slate-700 backdrop-blur-xl rounded-2xl shadow-2xl p-4 md:p-6 border border-white/20 relative z-10 space-y-8">
+        
+        {/* ==================== SECTION 1: JOB POSTS ==================== */}
+        <div>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-8 w-1 bg-red-600 rounded"></div>
+            <h2 className="text-xl font-bold text-white">📋 Job Posts</h2>
+            <span className="text-xs bg-red-100 text-red-700 px-2.5 py-1 rounded-full font-medium">
+              {filteredJobs.length}
+            </span>
+          </div>
+
+          <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 shadow-xl overflow-hidden">
+            <div className="flex flex-wrap justify-between items-center p-4 border-b border-red-200/50 gap-3 bg-white/50">
+              <div className="flex items-center gap-3">
+                <Briefcase className="w-5 h-5 text-red-600" />
+                <span className="font-semibold text-gray-800 text-sm">Manage Job Posts</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search jobs..."
+                    className="w-48 md:w-56 pl-9 pr-3.5 py-2 text-sm text-gray-800 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 bg-white/80"
+                    value={jobSearchTerm}
+                    onChange={(e) => setJobSearchTerm(e.target.value)}
+                  />
+                </div>
+                <button
+                  onClick={() => {
+                    resetJobForm();
+                    setIsJobModalOpen(true);
+                  }}
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-all"
+                >
+                  <Plus className="w-4 h-4" /> Add Job
+                </button>
+              </div>
             </div>
-            <div className="flex flex-wrap items-center gap-3">
-              {/* Search Input */}
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-red-50/50 border-b border-red-200/50 text-gray-700 font-semibold uppercase text-[10px] tracking-wider">
+                    <th className="px-4 py-3 min-w-[120px]">Job Title</th>
+                    <th className="px-4 py-3 min-w-[100px]">Location</th>
+                    <th className="px-4 py-3 w-[100px]">Experience</th>
+                    <th className="px-4 py-3 w-[100px]">Job Type</th>
+                    <th className="px-4 py-3 w-[90px] text-center">Status</th>
+                    <th className="px-4 py-3 w-[140px] text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-red-100/50">
+                  {currentJobs.length === 0 ? (
+                    <tr>
+                      <td colSpan="6" className="text-center py-12">
+                        <Briefcase className="w-10 h-10 mx-auto text-gray-300 mb-2" />
+                        <p className="font-medium text-gray-500 text-sm">No job posts found</p>
+                      </td>
+                    </tr>
+                  ) : (
+                    currentJobs.map((job) => (
+                      <tr key={job.id} className="hover:bg-red-50/30 transition-colors">
+                        <td className="px-4 py-3">
+                          <span className="font-semibold text-gray-800 text-sm">{job.jobTitle}</span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="flex items-center gap-1.5 text-sm text-gray-600">
+                            <MapPin className="w-3.5 h-3.5 text-red-600" /> {job.location}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="flex items-center gap-1.5 text-sm text-gray-600">
+                            <Clock className="w-3.5 h-3.5 text-red-600" /> {job.experience}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex items-center gap-1 px-1 py-0.5 rounded-full border text-[10px] font-medium ${getJobTypeColor(job.jobType)}`}>
+                            <BadgeCheck className="w-3 h-3" /> {job.jobType}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-medium ${getStatusColor(job.status)}`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${job.status === 'Active' ? 'bg-green-500' : 'bg-red-500'}`} />
+                            {job.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex justify-end gap-1.5">
+                            <button onClick={() => handleViewJob(job)} className="p-1.5 text-gray-400 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all">
+                              <Eye className="w-3.5 h-3.5" />
+                            </button>
+                            <button onClick={() => handleEditJob(job)} className="p-1.5 text-gray-400 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all">
+                              <Edit2 className="w-3.5 h-3.5" />
+                            </button>
+                            <button onClick={() => handleDeleteJob(job.id)} disabled={isDeletingJob} className="p-1.5 text-gray-400 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all disabled:opacity-50">
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <Pagination
+              currentPage={jobCurrentPage}
+              totalPages={jobTotalPages}
+              onPageChange={setJobCurrentPage}
+              itemsPerPage={itemsPerPage}
+              totalItems={filteredJobs.length}
+              startIndex={jobIndexOfFirstItem}
+            />
+          </div>
+        </div>
+
+        {/* ==================== SECTION 2: JOB APPLICATIONS ==================== */}
+        <div>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-8 w-1 bg-blue-600 rounded"></div>
+            <h2 className="text-xl font-bold text-white">📩 Candidate Responses</h2>
+            <span className="text-xs bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full font-medium">
+              {filteredApplications.length}
+            </span>
+          </div>
+
+          <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 shadow-xl overflow-hidden">
+            <div className="flex flex-wrap justify-between items-center p-4 border-b border-red-200/50 gap-3 bg-white/50">
+              <div className="flex items-center gap-3">
+                <Users className="w-5 h-5 text-blue-600" />
+                <span className="font-semibold text-gray-800 text-sm">Manage Applications</span>
+              </div>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search jobs..."
-                  className="w-40 md:w-52 pl-9 pr-4 py-2 text-sm text-gray-800 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 bg-white/80"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search applications..."
+                  className="w-48 md:w-56 pl-9 pr-3.5 py-2 text-sm text-gray-800 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 bg-white/80"
+                  value={appSearchTerm}
+                  onChange={(e) => setAppSearchTerm(e.target.value)}
                 />
               </div>
-              {/* Filter Input */}
-              <div className="relative">
-                <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Filter by keyword..."
-                  className="w-40 md:w-48 pl-9 pr-4 py-2 text-sm text-gray-800 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 bg-white/80"
-                  value={filterKeyword}
-                  onChange={(e) => setFilterKeyword(e.target.value)}
-                />
-              </div>
-              <button
-                onClick={() => {
-                  resetForm();
-                  setIsModalOpen(true);
-                }}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-600 to-red-500 text-white text-sm font-medium rounded-lg hover:shadow-lg hover:shadow-red-500/30 hover:scale-105 transition-all duration-300 whitespace-nowrap"
-              >
-                <Plus className="w-4 h-4" />
-                Post Job
-              </button>
             </div>
-          </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gradient-to-r from-red-600/10 to-red-500/10 border-b border-red-200/50 text-gray-700 font-semibold uppercase text-xs tracking-wider">
-                  <th className="px-6 py-4 min-w-[120px]">Job Role</th>
-                  <th className="px-6 py-4 min-w-[120px]">Field</th>
-                  <th className="px-6 py-4 min-w-[120px]">Location</th>
-                  <th className="px-6 py-4 w-[120px] text-center">Work Type</th>
-                  <th className="px-6 py-4 w-[120px] text-center">Post Date</th>
-                  <th className="px-6 py-4 w-[160px] text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-red-100/50">
-                {currentJobs.length === 0 ? (
-                  <tr>
-                    <td colSpan="6" className="text-center py-16">
-                      <Briefcase className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-                      <p className="font-medium text-gray-500 text-base">No job posts found</p>
-                      <p className="text-sm text-gray-400 mt-1">Try adjusting your search or filter</p>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-blue-50/50 border-b border-red-200/50 text-gray-700 font-semibold uppercase text-[10px] tracking-wider">
+                    <th className="px-4 py-3 w-[50px]">#</th>
+                    <th className="px-4 py-3 min-w-[120px]">Full Name</th>
+                    <th className="px-4 py-3 min-w-[140px]">Email</th>
+                    <th className="px-4 py-3 min-w-[100px]">Phone</th>
+                    <th className="px-4 py-3 min-w-[120px]">Position</th>
+                    <th className="px-4 py-3 w-[90px] text-center">Status</th>
+                    <th className="px-4 py-3 w-[140px] text-right">Actions</th>
                   </tr>
-                ) : (
-                  currentJobs.map((job) => (
-                    <tr key={job.id} className="hover:bg-red-50/50 transition-colors duration-150">
-                      <td className="px-6 py-4">
-                        <span className="font-semibold text-gray-800 block text-base">{job.jobRole}</span>
-                      </td>
-
-                      <td className="px-6 py-4">
-                        <span className="text-sm text-gray-600">{job.jobField}</span>
-                      </td>
-
-                      <td className="px-6 py-4">
-                        <span className="inline-flex items-center gap-1.5 text-sm text-gray-600">
-                          <MapPin className="w-3.5 h-3.5 text-red-600" />
-                          {job.location}
-                        </span>
-                      </td>
-
-                      <td className="px-6 py-4 text-center">
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium ${getWorkTypeColor(job.workType)}`}>
-                          <Clock className="w-3 h-3" />
-                          {job.workType}
-                        </span>
-                      </td>
-
-                      <td className="px-6 py-4 text-center">
-                        <span className="text-sm text-gray-600">
-                          {new Date(job.jobPostDate).toLocaleDateString('en-US', { 
-                            year: 'numeric', 
-                            month: 'short', 
-                            day: 'numeric' 
-                          })}
-                        </span>
-                      </td>
-
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-2">
-                          <button 
-                            onClick={() => handleView(job)}
-                            title="View" 
-                            className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
-                          >
-                            <Eye className="w-4.5 h-4.5" />
-                          </button>
-                          <button 
-                            onClick={() => handleEdit(job)}
-                            title="Edit" 
-                            className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200"
-                          >
-                            <Edit2 className="w-4.5 h-4.5" />
-                          </button>
-                          <button 
-                            onClick={() => handleDelete(job.id)}
-                            disabled={isDeleting}
-                            title="Delete" 
-                            className="p-2 text-gray-500 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all duration-200 disabled:opacity-50"
-                          >
-                            <Trash2 className="w-4.5 h-4.5" />
-                          </button>
-                        </div>
+                </thead>
+                <tbody className="divide-y divide-red-100/50">
+                  {currentApplications.length === 0 ? (
+                    <tr>
+                      <td colSpan="7" className="text-center py-12">
+                        <Users className="w-10 h-10 mx-auto text-gray-300 mb-2" />
+                        <p className="font-medium text-gray-500 text-sm">No applications found</p>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          {filteredJobs.length > 0 && (
-            <div className="px-6 py-4 border-t border-red-200/50 flex flex-col sm:flex-row justify-between items-center gap-4 bg-gradient-to-r from-red-50/50 to-transparent">
-              <span className="font-medium text-gray-600 text-sm">
-                Showing <span className="text-gray-800 font-bold">{indexOfFirstItem + 1}</span> to{' '}
-                <span className="text-gray-800 font-bold">
-                  {Math.min(indexOfLastItem, filteredJobs.length)}
-                </span>{' '}
-                of <span className="text-gray-800 font-bold">{filteredJobs.length}</span> jobs
-              </span>
-
-              <div className="flex items-center gap-1.5">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="p-2 rounded-lg border border-red-200/50 bg-white/80 text-gray-600 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
-                  aria-label="Previous page"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-
-                {Array.from({ length: Math.min(totalPages, 5) }, (_, index) => {
-                  let pageNum;
-                  if (totalPages <= 5) {
-                    pageNum = index + 1;
-                  } else if (currentPage <= 3) {
-                    pageNum = index + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    pageNum = totalPages - 4 + index;
-                  } else {
-                    pageNum = currentPage - 2 + index;
-                  }
-                  
-                  const isSelected = currentPage === pageNum;
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => handlePageChange(pageNum)}
-                      className={`w-9 h-9 rounded-lg text-sm font-bold transition-all duration-200 ${
-                        isSelected
-                          ? 'bg-gradient-to-r from-red-600 to-red-500 text-white shadow-lg shadow-red-500/30 scale-105'
-                          : 'bg-white/80 border border-red-200/50 text-gray-700 hover:bg-red-50 hover:border-red-300'
-                      }`}
-                      aria-label={`Go to page ${pageNum}`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
-
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="p-2 rounded-lg border border-red-200/50 bg-white/80 text-gray-600 hover:bg-red-50 hover:border-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
-                  aria-label="Next page"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
+                  ) : (
+                    currentApplications.map((app, index) => (
+                      <tr key={app.id} className="hover:bg-blue-50/30 transition-colors">
+                        <td className="px-4 py-3 text-center text-sm text-gray-500">
+                          {appIndexOfFirstItem + index + 1}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <User className="w-3.5 h-3.5 text-gray-400" />
+                            <span className="font-semibold text-gray-800 text-sm">{app.fullName}</span>
+                            {!app.viewed && <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" title="Unread" />}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <Mail className="w-3.5 h-3.5 text-gray-400" />
+                            <span className="text-sm text-gray-600 truncate max-w-[120px]">{app.email}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <Phone className="w-3.5 h-3.5 text-gray-400" />
+                            <span className="text-sm text-gray-600">{app.phone}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <Briefcase className="w-3.5 h-3.5 text-gray-400" />
+                            <span className="text-sm text-gray-600">{app.position}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-medium ${getStatusColor(app.status)}`}>
+                            {getStatusIcon(app.status)}
+                            {app.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex justify-end gap-1.5">
+                            <button onClick={() => handleViewApplication(app)} className="p-1.5 text-gray-400 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition-all">
+                              <Eye className="w-3.5 h-3.5" />
+                            </button>
+                            <button onClick={() => handleEditApplication(app)} className="p-1.5 text-gray-400 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition-all">
+                              <Edit2 className="w-3.5 h-3.5" />
+                            </button>
+                            <button onClick={() => handleDeleteApplication(app.id)} disabled={isDeletingApp} className="p-1.5 text-gray-400 rounded-lg hover:text-red-600 hover:bg-red-50 transition-all disabled:opacity-50">
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
-          )}
+
+            <Pagination
+              currentPage={appCurrentPage}
+              totalPages={appTotalPages}
+              onPageChange={setAppCurrentPage}
+              itemsPerPage={itemsPerPage}
+              totalItems={filteredApplications.length}
+              startIndex={appIndexOfFirstItem}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Add/Edit Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-in fade-in duration-200" onClick={closeModal}>
-          <div className="bg-white rounded-2xl w-full max-w-3xl p-6 shadow-2xl border border-red-200/50 max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-300" onClick={(e) => e.stopPropagation()}>
+      {/* ==================== JOB POST MODAL ==================== */}
+      {isJobModalOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={closeJobModal}>
+          <div className="bg-white rounded-xl w-full max-w-2xl p-5 shadow-xl border border-red-200 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                {editingId ? (
-                  <>
-                    <Edit2 className="w-5 h-5 text-red-600" />
-                    Edit Job Post
-                  </>
-                ) : (
-                  <>
-                    <Plus className="w-5 h-5 text-red-600" />
-                    Post New Job
-                  </>
-                )}
+              <h3 className="text-base font-bold text-gray-800 flex items-center gap-2">
+                {editingJobId ? <><Edit2 className="w-4 h-4 text-red-600" /> Edit Job</> : <><Plus className="w-4 h-4 text-red-600" /> Add New Job</>}
               </h3>
-              <button 
-                onClick={closeModal} 
-                className="p-2 rounded-xl text-gray-400 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
-                aria-label="Close modal"
-              >
-                <X className="w-5 h-5" />
+              <button onClick={closeJobModal} className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition-all">
+                <X className="w-4 h-4" />
               </button>
             </div>
-
-            {formError && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2 text-red-700 text-sm">
-                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <span>{formError}</span>
+            {jobFormError && (
+              <div className="mb-3 p-2.5 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2 text-red-600 text-xs">
+                <AlertCircle className="w-3.5 h-3.5 mt-0.5" />
+                <span>{jobFormError}</span>
               </div>
             )}
-
-            <form onSubmit={editingId ? handleUpdateJob : handleCreateJob} className="space-y-4 text-sm">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Left Column */}
-                <div className="space-y-4">
-                  {/* Job Role */}
+            <form onSubmit={editingJobId ? handleUpdateJob : handleCreateJob} className="space-y-3 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
-                      Job Role *
-                    </label>
-                    <input 
-                      type="text" 
-                      value={jobRole}
-                      onChange={(e) => setJobRole(e.target.value)}
-                      placeholder="e.g. Senior Software Engineer"
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
-                      maxLength={100}
-                    />
-                    <div className="text-xs text-gray-400 mt-1 text-right">
-                      {jobRole.length}/100
-                    </div>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-600 mb-1">Job Title *</label>
+                    <input type="text" value={jobFormData.jobTitle} onChange={(e) => setJobFormData({...jobFormData, jobTitle: e.target.value})} placeholder="e.g. Electrical Engineer" className="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500" maxLength={200} />
+                    <div className="text-[10px] text-gray-400 mt-0.5 text-right">{jobFormData.jobTitle.length}/200</div>
                   </div>
-
-                  {/* Job Field/Domain */}
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
-                      Job Field/Domain *
-                    </label>
-                    <input 
-                      type="text" 
-                      value={jobField}
-                      onChange={(e) => setJobField(e.target.value)}
-                      placeholder="e.g. Software Development"
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
-                      maxLength={200}
-                    />
-                    <div className="text-xs text-gray-400 mt-1 text-right">
-                      {jobField.length}/200
-                    </div>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-600 mb-1">Location *</label>
+                    <input type="text" value={jobFormData.location} onChange={(e) => setJobFormData({...jobFormData, location: e.target.value})} placeholder="e.g. Patna, Bihar" className="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500" maxLength={200} />
+                    <div className="text-[10px] text-gray-400 mt-0.5 text-right">{jobFormData.location.length}/200</div>
                   </div>
-
-                  {/* Location */}
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
-                      Location *
-                    </label>
-                    <input 
-                      type="text" 
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      placeholder="e.g. San Francisco, CA or Remote"
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
-                      maxLength={200}
-                    />
-                    <div className="text-xs text-gray-400 mt-1 text-right">
-                      {location.length}/200
-                    </div>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-600 mb-1">Experience *</label>
+                    <input type="text" value={jobFormData.experience} onChange={(e) => setJobFormData({...jobFormData, experience: e.target.value})} placeholder="e.g. 3-5 Years" className="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500" maxLength={100} />
+                    <div className="text-[10px] text-gray-400 mt-0.5 text-right">{jobFormData.experience.length}/100</div>
                   </div>
-
-                  {/* Experience */}
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
-                      Experience *
-                    </label>
-                    <input 
-                      type="text" 
-                      value={experience}
-                      onChange={(e) => setExperience(e.target.value)}
-                      placeholder="e.g. 5-8 years"
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
-                      maxLength={100}
-                    />
-                    <div className="text-xs text-gray-400 mt-1 text-right">
-                      {experience.length}/100
-                    </div>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-600 mb-1">Salary/Compensation *</label>
+                    <input type="text" value={jobFormData.salary} onChange={(e) => setJobFormData({...jobFormData, salary: e.target.value})} placeholder="e.g. Competitive" className="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500" maxLength={100} />
+                    <div className="text-[10px] text-gray-400 mt-0.5 text-right">{jobFormData.salary.length}/100</div>
                   </div>
                 </div>
-
-                {/* Right Column */}
-                <div className="space-y-4">
-                  {/* Work Type - Dropdown */}
+                <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
-                      Work Type *
-                    </label>
-                    <select
-                      value={workType}
-                      onChange={(e) => setWorkType(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all bg-white"
-                    >
-                      <option value="">Select work type</option>
-                      {workTypeOptions.map((type) => (
-                        <option key={type} value={type}>{type}</option>
-                      ))}
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-600 mb-1">Job Type *</label>
+                    <select value={jobFormData.jobType} onChange={(e) => setJobFormData({...jobFormData, jobType: e.target.value})} className="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 bg-white">
+                      <option value="">Select Job Type</option>
+                      {jobTypeOptions.map((type) => (<option key={type} value={type}>{type}</option>))}
                     </select>
                   </div>
-
-                  {/* Job Post Date */}
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
-                      Job Post Date *
-                    </label>
-                    <input 
-                      type="date" 
-                      value={jobPostDate}
-                      onChange={(e) => setJobPostDate(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
-                      max={new Date().toISOString().split('T')[0]}
-                    />
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-600 mb-1">Role Overview *</label>
+                    <textarea value={jobFormData.roleOverview} onChange={(e) => setJobFormData({...jobFormData, roleOverview: e.target.value})} placeholder="Brief description of the role..." className="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 resize-none" rows="2" maxLength={500} />
+                    <div className="text-[10px] text-gray-400 mt-0.5 text-right">{jobFormData.roleOverview.length}/500</div>
                   </div>
-
-                  {/* Description */}
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
-                      Job Description *
-                    </label>
-                    <textarea 
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Describe the job responsibilities, requirements, and benefits..."
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all resize-none"
-                      rows="4"
-                     
-                    />
-                   
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-600 mb-1">Status</label>
+                    <select value={jobFormData.status} onChange={(e) => setJobFormData({...jobFormData, status: e.target.value})} className="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 bg-white">
+                      {jobStatusOptions.map((opt) => (<option key={opt} value={opt}>{opt}</option>))}
+                    </select>
                   </div>
                 </div>
               </div>
-
-              {/* Filter Field - Full Width */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
-                  Filter  <span className="font-normal text-gray-400">*</span>
-                </label>
-                <textarea 
-                  value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
-                  placeholder="Enter keywords for filtering e.g. Electrical Engineering..."
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all resize-none"
-                  rows="2"
-                  required
-                  maxLength={500}
-                />
-                <div className="text-xs text-gray-400 mt-1 text-right">
-                  {filter.length}/500
-                </div>
-                <p className="text-xs text-gray-400 mt-1">Enter comma-separated keywords for filtering job posts</p>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-600 mb-1">Key Responsibilities *</label>
+                <textarea value={jobFormData.keyResponsibilities} onChange={(e) => setJobFormData({...jobFormData, keyResponsibilities: e.target.value})} placeholder="• Responsibility 1\n• Responsibility 2" className="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 resize-none" rows="3" maxLength={1000} />
+                <div className="text-[10px] text-gray-400 mt-0.5 text-right">{jobFormData.keyResponsibilities.length}/1000</div>
+                <p className="text-[10px] text-gray-400 mt-0.5">Use • or - for bullet points</p>
               </div>
-
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="flex-1 py-2.5 border border-gray-200 rounded-xl font-semibold text-gray-600 hover:bg-gray-50 transition-all duration-200"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-2.5 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-red-500/30 hover:scale-105 transition-all duration-300"
-                >
-                  {editingId ? 'Update Job' : 'Post Job'}
-                </button>
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-600 mb-1">Requirements & Qualifications *</label>
+                <textarea value={jobFormData.requirements} onChange={(e) => setJobFormData({...jobFormData, requirements: e.target.value})} placeholder="• B.Tech / B.E. in Electrical Engineering" className="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-500 resize-none" rows="3" maxLength={1000} />
+                <div className="text-[10px] text-gray-400 mt-0.5 text-right">{jobFormData.requirements.length}/1000</div>
+                <p className="text-[10px] text-gray-400 mt-0.5">Use • or - for bullet points</p>
+              </div>
+              <div className="flex gap-2 pt-2">
+                <button type="button" onClick={closeJobModal} className="flex-1 py-2 border border-gray-200 rounded-lg font-semibold text-gray-600 text-sm hover:bg-gray-50">Cancel</button>
+                <button type="submit" className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold text-sm transition-all">{editingJobId ? 'Update Job' : 'Save Job'}</button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* View Modal */}
-      {isViewModalOpen && viewingJob && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-in fade-in duration-200" onClick={() => {
-          setIsViewModalOpen(false);
-          setViewingJob(null);
-        }}>
-          <div className="bg-white rounded-2xl w-full max-w-3xl p-6 shadow-2xl border border-red-200/50 max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-300" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                <Briefcase className="w-5 h-5 text-red-600" />
-                Job Details
-              </h3>
-              <button 
-                onClick={() => {
-                  setIsViewModalOpen(false);
-                  setViewingJob(null);
-                }}
-                className="p-2 rounded-xl text-gray-400 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
-                aria-label="Close preview"
-              >
-                <X className="w-5 h-5" />
-              </button>
+      {/* ==================== JOB VIEW MODAL ==================== */}
+      {isJobViewModalOpen && viewingJob && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => { setIsJobViewModalOpen(false); setViewingJob(null); }}>
+          <div className="bg-white rounded-xl w-full max-w-2xl p-5 shadow-xl border border-red-200 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-base font-bold text-gray-800 flex items-center gap-2"><Briefcase className="w-4 h-4 text-red-600" /> Job Details</h3>
+              <button onClick={() => { setIsJobViewModalOpen(false); setViewingJob(null); }} className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600"><X className="w-4 h-4" /></button>
             </div>
-
-            <div className="space-y-5">
-              {/* Job Header */}
-              <div className="bg-gradient-to-r from-red-50 to-red-50/30 p-4 rounded-xl border border-red-200/50">
-                <h4 className="text-xl font-bold text-gray-800">{viewingJob.jobRole}</h4>
-                <p className="text-gray-600 mt-1">{viewingJob.jobField}</p>
-              </div>
-
-              {/* Details Grid */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <MapPin className="w-4 h-4 text-red-600" />
-                    <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Location</p>
-                  </div>
-                  <p className="text-sm font-medium text-gray-700 bg-red-50/50 px-4 py-2.5 rounded-xl border border-red-200/50">
-                    {viewingJob.location}
-                  </p>
-                </div>
-
-                <div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <Clock className="w-4 h-4 text-red-600" />
-                    <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Work Type</p>
-                  </div>
-                  <p className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border text-sm font-medium ${getWorkTypeColor(viewingJob.workType)}`}>
-                    {viewingJob.workType}
-                  </p>
-                </div>
-
-                <div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <Users className="w-4 h-4 text-red-600" />
-                    <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Experience</p>
-                  </div>
-                  <p className="text-sm font-medium text-gray-700 bg-red-50/50 px-4 py-2.5 rounded-xl border border-red-200/50">
-                    {viewingJob.experience}
-                  </p>
-                </div>
-
-                <div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <Calendar className="w-4 h-4 text-red-600" />
-                    <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Post Date</p>
-                  </div>
-                  <p className="text-sm font-medium text-gray-700 bg-red-50/50 px-4 py-2.5 rounded-xl border border-red-200/50">
-                    {new Date(viewingJob.jobPostDate).toLocaleDateString('en-US', { 
-                      weekday: 'long',
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}
-                  </p>
+            <div className="space-y-4">
+              <div className="bg-gradient-to-r from-red-50 to-red-50/30 p-4 rounded-lg border border-red-200/50">
+                <h4 className="text-lg font-bold text-gray-800">{viewingJob.jobTitle}</h4>
+                <div className="flex flex-wrap gap-3 mt-2">
+                  <span className="flex items-center gap-1.5 text-sm text-gray-600"><MapPin className="w-4 h-4 text-red-600" /> {viewingJob.location}</span>
+                  <span className="flex items-center gap-1.5 text-sm text-gray-600"><Clock className="w-4 h-4 text-red-600" /> {viewingJob.experience}</span>
+                  <span className="flex items-center gap-1.5 text-sm text-gray-600"><DollarSign className="w-4 h-4 text-red-600" /> {viewingJob.salary}</span>
+                  <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-xs font-medium ${getJobTypeColor(viewingJob.jobType)}`}><BadgeCheck className="w-3 h-3" /> {viewingJob.jobType}</span>
+                  <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-xs font-medium ${getStatusColor(viewingJob.status)}`}><span className={`w-1.5 h-1.5 rounded-full ${viewingJob.status === 'Active' ? 'bg-green-500' : 'bg-red-500'}`} /> {viewingJob.status}</span>
                 </div>
               </div>
-
-              {/* Description */}
-              <div>
-                <div className="flex items-center gap-2 mb-1.5">
-                  <FileText className="w-4 h-4 text-red-600" />
-                  <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Description</p>
-                </div>
-                <p className="text-sm text-gray-700 bg-red-50/50 px-4 py-2.5 rounded-xl border border-red-200/50 max-h-40 overflow-y-auto">
-                  {viewingJob.description}
-                </p>
+              <div className="bg-red-50/50 p-3 rounded-lg border border-red-200/50">
+                <div className="flex items-center gap-2 mb-1.5"><FileText className="w-4 h-4 text-red-600" /><p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Role Overview</p></div>
+                <p className="text-sm text-gray-700">{viewingJob.roleOverview}</p>
               </div>
+              <div className="bg-red-50/50 p-3 rounded-lg border border-red-200/50">
+                <div className="flex items-center gap-2 mb-1.5"><List className="w-4 h-4 text-red-600" /><p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Key Responsibilities</p></div>
+                <ul className="space-y-1">{formatBulletPoints(viewingJob.keyResponsibilities).map((item, idx) => (<li key={idx} className="text-sm text-gray-700 flex items-start gap-2"><span className="text-red-600 mt-0.5">•</span>{item.replace(/^[•\-]\s*/, '')}</li>))}</ul>
+              </div>
+              <div className="bg-red-50/50 p-3 rounded-lg border border-red-200/50">
+                <div className="flex items-center gap-2 mb-1.5"><Award className="w-4 h-4 text-red-600" /><p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Requirements</p></div>
+                <ul className="space-y-1">{formatBulletPoints(viewingJob.requirements).map((item, idx) => (<li key={idx} className="text-sm text-gray-700 flex items-start gap-2"><span className="text-red-600 mt-0.5">•</span>{item.replace(/^[•\-]\s*/, '')}</li>))}</ul>
+              </div>
+              <button onClick={() => { setIsJobViewModalOpen(false); setViewingJob(null); }} className="w-full py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold text-sm">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
 
-              {/* Filter Field - Added to View Modal */}
-              {viewingJob.filter && (
-                <div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <Filter className="w-4 h-4 text-red-600" />
-                    <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Filter / Keywords</p>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {viewingJob.filter.split(',').map((keyword, index) => (
-                      <span key={index} className="bg-red-50/80 text-gray-700 px-2.5 py-1 rounded-full border border-red-200/50 text-xs font-medium">
-                        {keyword.trim()}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+      {/* ==================== APPLICATION MODAL ==================== */}
+      {isAppModalOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={closeAppModal}>
+          <div className="bg-white rounded-xl w-full max-w-2xl p-5 shadow-xl border border-red-200 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-base font-bold text-gray-800 flex items-center gap-2"><Edit2 className="w-4 h-4 text-blue-600" /> Edit Application</h3>
+              <button onClick={closeAppModal} className="p-1.5 rounded-lg text-gray-400 hover:bg-blue-50 hover:text-blue-600"><X className="w-4 h-4" /></button>
+            </div>
+            {appFormError && (
+              <div className="mb-3 p-2.5 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2 text-red-600 text-xs">
+                <AlertCircle className="w-3.5 h-3.5 mt-0.5" /><span>{appFormError}</span>
+              </div>
+            )}
+            <form onSubmit={handleUpdateApplication} className="space-y-3 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div><label className="block text-[10px] font-bold uppercase tracking-wider text-gray-600 mb-1">Full Name *</label><input type="text" value={appFormData.fullName} onChange={(e) => setAppFormData({...appFormData, fullName: e.target.value})} className="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-blue-500" maxLength={100} /></div>
+                <div><label className="block text-[10px] font-bold uppercase tracking-wider text-gray-600 mb-1">Email Address *</label><input type="email" value={appFormData.email} onChange={(e) => setAppFormData({...appFormData, email: e.target.value})} className="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-blue-500" maxLength={100} /></div>
+                <div><label className="block text-[10px] font-bold uppercase tracking-wider text-gray-600 mb-1">Phone Number *</label><input type="text" value={appFormData.phone} onChange={(e) => setAppFormData({...appFormData, phone: e.target.value})} className="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-blue-500" maxLength={20} /></div>
+                <div><label className="block text-[10px] font-bold uppercase tracking-wider text-gray-600 mb-1">Position *</label><input type="text" value={appFormData.position} onChange={(e) => setAppFormData({...appFormData, position: e.target.value})} className="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-blue-500" maxLength={100} /></div>
+                <div><label className="block text-[10px] font-bold uppercase tracking-wider text-gray-600 mb-1">Experience *</label><input type="text" value={appFormData.experience} onChange={(e) => setAppFormData({...appFormData, experience: e.target.value})} placeholder="e.g. 5 Years" className="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-blue-500" maxLength={50} /></div>
+                <div><label className="block text-[10px] font-bold uppercase tracking-wider text-gray-600 mb-1">Qualification *</label><input type="text" value={appFormData.qualification} onChange={(e) => setAppFormData({...appFormData, qualification: e.target.value})} placeholder="e.g. B.Tech Electrical" className="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-blue-500" maxLength={100} /></div>
+                <div className="col-span-2"><label className="block text-[10px] font-bold uppercase tracking-wider text-gray-600 mb-1">Status *</label><select value={appFormData.status} onChange={(e) => setAppFormData({...appFormData, status: e.target.value})} className="w-full px-3.5 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-blue-500 bg-white">{statusOptions.map((opt) => (<option key={opt} value={opt}>{opt}</option>))}</select></div>
+              </div>
+              <div className="flex gap-2 pt-2">
+                <button type="button" onClick={closeAppModal} className="flex-1 py-2 border border-gray-200 rounded-lg font-semibold text-gray-600 text-sm hover:bg-gray-50">Cancel</button>
+                <button type="submit" className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-sm">Update Application</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
-              {/* Close Button */}
-              <button
-                onClick={() => {
-                  setIsViewModalOpen(false);
-                  setViewingJob(null);
-                }}
-                className="w-full py-3 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-red-500/30 hover:scale-105 transition-all duration-300"
-              >
-                Close
-              </button>
+      {/* ==================== APPLICATION VIEW MODAL ==================== */}
+      {isAppViewModalOpen && viewingApplication && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => { setIsAppViewModalOpen(false); setViewingApplication(null); }}>
+          <div className="bg-white rounded-xl w-full max-w-2xl p-5 shadow-xl border border-red-200 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-base font-bold text-gray-800 flex items-center gap-2"><Users className="w-4 h-4 text-blue-600" /> Application Details</h3>
+              <button onClick={() => { setIsAppViewModalOpen(false); setViewingApplication(null); }} className="p-1.5 rounded-lg text-gray-400 hover:bg-blue-50 hover:text-blue-600"><X className="w-4 h-4" /></button>
+            </div>
+            <div className="space-y-4">
+              <div className="bg-gradient-to-r from-blue-50 to-blue-50/30 p-4 rounded-lg border border-blue-200/50">
+                <h4 className="text-lg font-bold text-gray-800">{viewingApplication.fullName}</h4>
+                <p className="text-gray-600 text-sm mt-1">Applied for: {viewingApplication.position}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-200/50"><div className="flex items-center gap-2 mb-1"><User className="w-4 h-4 text-blue-600" /><p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Full Name</p></div><p className="text-sm font-semibold text-gray-800">{viewingApplication.fullName}</p></div>
+                <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-200/50"><div className="flex items-center gap-2 mb-1"><Mail className="w-4 h-4 text-blue-600" /><p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Email</p></div><p className="text-sm font-semibold text-gray-800">{viewingApplication.email}</p></div>
+                <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-200/50"><div className="flex items-center gap-2 mb-1"><Phone className="w-4 h-4 text-blue-600" /><p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Phone</p></div><p className="text-sm font-semibold text-gray-800">{viewingApplication.phone}</p></div>
+                <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-200/50"><div className="flex items-center gap-2 mb-1"><Briefcase className="w-4 h-4 text-blue-600" /><p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Position</p></div><p className="text-sm font-semibold text-gray-800">{viewingApplication.position}</p></div>
+                <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-200/50"><div className="flex items-center gap-2 mb-1"><Clock className="w-4 h-4 text-blue-600" /><p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Experience</p></div><p className="text-sm font-semibold text-gray-800">{viewingApplication.experience}</p></div>
+                <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-200/50"><div className="flex items-center gap-2 mb-1"><GraduationCap className="w-4 h-4 text-blue-600" /><p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Qualification</p></div><p className="text-sm font-semibold text-gray-800">{viewingApplication.qualification}</p></div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-200/50"><div className="flex items-center gap-2 mb-1"><FileText className="w-4 h-4 text-blue-600" /><p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Status</p></div><span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-xs font-medium ${getStatusColor(viewingApplication.status)}`}>{getStatusIcon(viewingApplication.status)}{viewingApplication.status}</span></div>
+                <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-200/50"><div className="flex items-center gap-2 mb-1"><Download className="w-4 h-4 text-blue-600" /><p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Resume</p></div><a href={viewingApplication.resumeUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg"><FileText className="w-3.5 h-3.5" /> Download PDF</a></div>
+              </div>
+              <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-200/50"><div className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-blue-600" /><p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Applied Date</p><span className="ml-auto text-sm font-medium text-gray-700">{viewingApplication.appliedDate}</span></div></div>
+              <button onClick={() => { setIsAppViewModalOpen(false); setViewingApplication(null); }} className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-sm">Close</button>
             </div>
           </div>
         </div>
